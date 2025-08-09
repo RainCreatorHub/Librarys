@@ -48,6 +48,8 @@ function MoonLibV2:MakeWindow(WindowInfo)
     
     task.spawn(function()
         MainWindow.Name = "Window"; MainWindow.Parent = ScreenGui; MainWindow.AnchorPoint = Vector2.new(0.5, 0.5); MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0); MainWindow.Size = UDim2.new(0, 540, 0, 380); MainWindow.BackgroundColor3 = Theme.Primary; MainWindow.BorderSizePixel = 0; MainWindow.Active = true; MainWindow.Draggable = true; MainWindow.Visible = false
+        MainWindow.ClipsDescendants = true
+        
         local Corner = Instance.new("UICorner"); Corner.CornerRadius = Theme.CornerRadius; Corner.Parent = MainWindow
         local TitleBar = Instance.new("Frame"); TitleBar.Name = "TitleBar"; TitleBar.Parent = MainWindow; TitleBar.Size = UDim2.new(1, 0, 0, 40); TitleBar.Position = UDim2.new(0, 0, 0, 0); TitleBar.BackgroundTransparency = 1
         local TitleLabel = Instance.new("TextLabel"); TitleLabel.Name = "Title"; TitleLabel.Parent = TitleBar; TitleLabel.Size = UDim2.new(1, -80, 1, 0); TitleLabel.Position = UDim2.new(0, 15, 0, 0); TitleLabel.BackgroundTransparency = 1; TitleLabel.Font = Theme.Font; TitleLabel.TextColor3 = Theme.FontColor; TitleLabel.TextSize = 20; TitleLabel.Text = WindowInfo.Name or "Window"; TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -99,10 +101,7 @@ function MoonLibV2:MakeWindow(WindowInfo)
         local TabObject = {}; TabObject.Button = TabButton; TabObject.Content = TabContent; TabObject.SubTabs = {}; TabObject.SubTabHolder = SubTabHolder; TabObject.HasSubTabs = false; TabObject.ContentY = 15
 
         function TabObject:MakeSubTab(SubTabInfo)
-            if not TabObject.HasSubTabs then
-                ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 30)
-                TabObject.ContentY = 40
-            end
+            if not TabObject.HasSubTabs then ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 30); TabObject.ContentY = 40 end
             TabObject.HasSubTabs = true
             
             local SubTabButton = Instance.new("TextButton"); SubTabButton.Name = SubTabInfo.Name; SubTabButton.Parent = SubTabHolder; SubTabButton.Size = UDim2.new(0, 100, 1, 0); SubTabButton.BackgroundColor3 = Theme.Secondary; SubTabButton.Text = SubTabInfo.Name; SubTabButton.Font = Theme.Font; SubTabButton.TextColor3 = Theme.FontColor; SubTabButton.TextSize = 12
