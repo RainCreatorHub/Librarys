@@ -74,7 +74,8 @@ function Lib:MakeWindow(Info)
     local tBar = Instance.new("Frame")
     tBar.Name = "TitleBar"
     tBar.Parent = mFrm
-    tBar.Size = UDim2.new(1, 0, 0, 40)
+    tBar.Size = UDim2.new(1, 0, 0, 30)
+    tBar.Position = UDim2.new(0, 0, 0, 5)
     tBar.BackgroundTransparency = 1
     
     local tLbl = Instance.new("TextLabel")
@@ -92,18 +93,28 @@ function Lib:MakeWindow(Info)
     local sLbl = Instance.new("TextLabel")
     sLbl.Name = "SubTitle"
     sLbl.Parent = mFrm
-    sLbl.Size = UDim2.new(1, -30, 0, 20)
-    sLbl.Position = UDim2.new(0, 15, 0, 40)
+    sLbl.Size = UDim2.new(1, -30, 0, 15)
+    sLbl.Position = UDim2.new(0, 15, 0, 30)
     sLbl.BackgroundTransparency = 1
     sLbl.Font = Enum.Font.Gotham
     sLbl.TextColor3 = th.Font2
     sLbl.TextSize = 14
     sLbl.Text = Info.SubTitle or ""
     sLbl.TextXAlignment = Enum.TextXAlignment.Left
+
+    local line = Instance.new("Frame")
+    line.Name = "Separator"
+    line.Parent = mFrm
+    line.BackgroundColor3 = th.BG
+    line.BorderSizePixel = 0
+    line.Size = UDim2.new(1, -30, 0, 2)
+    line.Position = UDim2.new(0.5, 0, 0, 55)
+    line.AnchorPoint = Vector2.new(0.5, 0)
     
     local winObj = {}
     winObj.Frame = mFrm
     winObj.Theme = th
+    winObj.ContentY = 65
     
     function winObj:AddTab(tabInfo)
         -- Futura lógica para abas
