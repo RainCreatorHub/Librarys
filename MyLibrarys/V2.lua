@@ -15,6 +15,16 @@ local Themes = {
         Font = Enum.Font.GothamSemibold,
         CornerRadius = UDim.new(0, 8)
     }
+    Light = {
+        Background = Color3.fromRGB(24, 25, 29),
+        Primary = Color3.fromRGB(44, 46, 51),
+        Secondary = Color3.fromRGB(62, 64, 70),
+        Accent = Color3.fromRGB(88, 101, 242),
+        FontColor = Color3.fromRGB(242, 242, 242),
+        FontColorSecondary = Color3.fromRGB(180, 180, 180),
+        Font = Enum.Font.GothamSemibold,
+        CornerRadius = UDim.new(0, 8)
+    }
 }
 Themes.dark = Themes.Dark
 
@@ -27,12 +37,15 @@ local function CreateElementColumns(parent)
     ColumnsContainer.Name = "ElementColumns"
     ColumnsContainer.Parent = parent
     ColumnsContainer.BackgroundTransparency = 1
-    ColumnsContainer.Size = UDim2.new(1, 0, 0, 200)
+    ColumnsContainer.Size = UDim2.new(1, 0, 1, 0)
+    ColumnsContainer.Position = UDim2.new(0, 0, 0, 10)
 
     local Layout = Instance.new("UIListLayout")
     Layout.Parent = ColumnsContainer
     Layout.FillDirection = Enum.FillDirection.Horizontal
     Layout.Padding = UDim.new(0, 10)
+    Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    Layout.VerticalAlignment = Enum.VerticalAlignment.Top
 
     local LeftColumn = Instance.new("Frame")
     LeftColumn.Name = "Left"
@@ -88,7 +101,7 @@ function MoonLibV2:MakeWindow(WindowInfo)
         local TitleLabel = Instance.new("TextLabel"); TitleLabel.Name = "Title"; TitleLabel.Parent = TitleBar; TitleLabel.Size = UDim2.new(1, -80, 1, 0); TitleLabel.Position = UDim2.new(0, 15, 0, 0); TitleLabel.BackgroundTransparency = 1; TitleLabel.Font = Theme.Font; TitleLabel.TextColor3 = Theme.FontColor; TitleLabel.TextSize = 20; TitleLabel.Text = WindowInfo.Name or "Window"; TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
         local SubTitleLabel = Instance.new("TextLabel"); SubTitleLabel.Name = "SubTitle"; SubTitleLabel.Parent = MainWindow; SubTitleLabel.Size = UDim2.new(1, -30, 0, 15); SubTitleLabel.Position = UDim2.new(0, 15, 0, 30); SubTitleLabel.BackgroundTransparency = 1; SubTitleLabel.Font = Enum.Font.Gotham; SubTitleLabel.TextColor3 = Theme.FontColorSecondary; SubTitleLabel.TextSize = 14; SubTitleLabel.Text = WindowInfo.SubTitle or ""; SubTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
         local HeaderSeparatorLine = Instance.new("Frame"); HeaderSeparatorLine.Name = "HeaderSeparator"; HeaderSeparatorLine.Parent = MainWindow; HeaderSeparatorLine.BackgroundColor3 = Theme.Background; HeaderSeparatorLine.BorderSizePixel = 0; HeaderSeparatorLine.Size = UDim2.new(1, -30, 0, 2); HeaderSeparatorLine.Position = UDim2.new(0.5, 0, 0, 55); HeaderSeparatorLine.AnchorPoint = Vector2.new(0.5, 0)
-        WindowObject.Frame = MainWindow; WindowObject.Theme = Theme; WindowObject.Tabs = {}
+        WindowObject.Frame = MainWindow; WindowObject.Theme = Theme; WindowObject.Tabs = {}; WindowObject.DefaultTab = nil
         
         WindowObject.TabHolder = Instance.new("ScrollingFrame"); WindowObject.TabHolder.Name = "TabHolder"; WindowObject.TabHolder.Parent = MainWindow; WindowObject.TabHolder.Size = UDim2.new(1, -10, 0, 30); WindowObject.TabHolder.Position = UDim2.new(0, 5, 0, 65); WindowObject.TabHolder.BackgroundTransparency = 1; WindowObject.TabHolder.BorderSizePixel = 0; WindowObject.TabHolder.ScrollingDirection = Enum.ScrollingDirection.X; WindowObject.TabHolder.ScrollBarImageColor3 = Color3.new(0,0,0); WindowObject.TabHolder.ScrollBarThickness = 0
         
@@ -96,12 +109,12 @@ function MoonLibV2:MakeWindow(WindowInfo)
         
         local IsMinimized = false; local OriginalSizeY = MainWindow.Size.Y.Offset
         local CloseButton = Instance.new("TextButton"); CloseButton.Name = "CloseButton"; CloseButton.Parent = TitleBar; CloseButton.Size = UDim2.new(0, 20, 0, 20); CloseButton.Position = UDim2.new(1, -25, 0.5, 0); CloseButton.AnchorPoint = Vector2.new(0.5, 0.5); CloseButton.BackgroundColor3 = Theme.Primary; CloseButton.Text = "X"; CloseButton.Font = Theme.Font; CloseButton.TextColor3 = Theme.FontColor; CloseButton.TextSize = 14
-        CloseButton.MouseButton1Click:Connect(function() local tween = TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.fromOffset(0,0), Position = UDim2.fromOffset(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)}); tween:Play(); tween.Completed:Wait(); ScreenGui:Destroy() end)
+        CloseButton.Activated:Connect(function() local tween = TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.fromOffset(0,0), Position = UserInputService:GetMouseLocation()}); tween:Play(); tween.Completed:Wait(); ScreenGui:Destroy() end)
         
         local ResizeHandle = Instance.new("TextButton"); ResizeHandle.Name = "ResizeHandle"; ResizeHandle.Parent = MainWindow; ResizeHandle.Size = UDim2.new(0, 20, 0, 20); ResizeHandle.Position = UDim2.new(1, 0, 1, 0); ResizeHandle.AnchorPoint = Vector2.new(1, 1); ResizeHandle.BackgroundTransparency = 1; ResizeHandle.Text = ""; ResizeHandle.AutoButtonColor = false
         
         local MinimizeButton = Instance.new("TextButton"); MinimizeButton.Name = "MinimizeButton"; MinimizeButton.Parent = TitleBar; MinimizeButton.Size = UDim2.new(0, 20, 0, 20); MinimizeButton.Position = UDim2.new(1, -50, 0.5, 0); MinimizeButton.AnchorPoint = Vector2.new(0.5, 0.5); MinimizeButton.BackgroundColor3 = Theme.Primary; MinimizeButton.Text = "-"; MinimizeButton.Font = Theme.Font; MinimizeButton.TextColor3 = Theme.FontColor; MinimizeButton.TextSize = 20
-        MinimizeButton.MouseButton1Click:Connect(function()
+        MinimizeButton.Activated:Connect(function()
             IsMinimized = not IsMinimized
             ResizeHandle.Visible = not IsMinimized
             local targetSize; if IsMinimized then targetSize = UDim2.new(MainWindow.Size.X.Scale, MainWindow.Size.X.Offset, 0, TitleBar.AbsoluteSize.Y) else targetSize = UDim2.new(MainWindow.Size.X.Scale, MainWindow.Size.X.Offset, 0, OriginalSizeY) end
@@ -120,72 +133,136 @@ function MoonLibV2:MakeWindow(WindowInfo)
         end)
     end)
 
-    task.wait(1.5)
-    if ScreenGui:FindFirstChild("LoadScreen") then
-        local LoadFrame = ScreenGui.LoadScreen; local tweenInfo = TweenInfo.new(0.5)
-        TweenService:Create(LoadFrame, tweenInfo, {BackgroundTransparency = 1}):Play()
-        for _, child in ipairs(LoadFrame:GetChildren()) do if child:IsA("GuiObject") and child.Name ~= "UICorner" then if child:IsA("TextLabel") then TweenService:Create(child, tweenInfo, {TextTransparency = 1}):Play() else TweenService:Create(child, tweenInfo, {BackgroundTransparency = 1}):Play(); for _, subChild in ipairs(child:GetChildren()) do if subChild:IsA("GuiObject") and subChild.Name ~= "UICorner" then TweenService:Create(subChild, tweenInfo, {BackgroundTransparency = 1}):Play() end end end end end
-        task.wait(0.5); LoadFrame:Destroy()
-    end
-    
-    MainWindow.Visible = true; MainWindow.Size = UDim2.new(0, 0, 0, 0)
-    TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 540, 0, 380)}):Play()
-
-    local function AddSection(self, SectionInfo)
-        local Position = string.lower(SectionInfo.Position or "left")
-        local ParentColumn = self.Columns[Position]
-        
-        if not ParentColumn then
-            warn("MoonLibV2: Invalid section position '"..tostring(SectionInfo.Position).."' provided. Defaulting to Left.")
-            ParentColumn = self.Columns.Left
-        end
-
-        local SectionLabel = Instance.new("TextLabel")
-        SectionLabel.Name = SectionInfo.Name or "Section"
-        SectionLabel.Parent = ParentColumn
-        SectionLabel.Size = UDim2.new(1, 0, 0, 25)
-        SectionLabel.BackgroundTransparency = 1
-        SectionLabel.Font = Theme.Font
-        SectionLabel.TextColor3 = Theme.FontColorSecondary
-        SectionLabel.TextSize = 14
-        SectionLabel.Text = " " .. (SectionInfo.Name or "Section")
-        SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
-        
-        return SectionLabel
-    end
-
     function WindowObject:MakeTab(TabInfo)
-        local TabButton = Instance.new("TextButton"); TabButton.Name = TabInfo.Name; TabButton.Parent = WindowObject.TabHolder; TabButton.Size = UDim2.new(0, 100, 1, 0); TabButton.BackgroundColor3 = Theme.Secondary; TabButton.Text = TabInfo.Name; TabButton.Font = Theme.Font; TabButton.TextColor3 = Theme.FontColor; TabButton.TextSize = 14
-        local TabCorner = Instance.new("UICorner"); TabCorner.CornerRadius = Theme.CornerRadius; TabCorner.Parent = TabButton
-        local TabContent = Instance.new("CanvasGroup"); TabContent.Name = "Content"; TabContent.Parent = MainWindow; TabContent.Size = UDim2.new(1, -10, 1, -105); TabContent.Position = UDim2.new(0, 5, 0, 100); TabContent.BackgroundTransparency = 1; TabContent.GroupTransparency = 1
+        local TabButton = Instance.new("TextButton")
+        TabButton.Name = TabInfo.Name
+        TabButton.Parent = WindowObject.TabHolder
+        TabButton.Size = UDim2.new(0, 100, 1, 0)
+        TabButton.BackgroundColor3 = Theme.Secondary
+        TabButton.Text = TabInfo.Name
+        TabButton.Font = Theme.Font
+        TabButton.TextColor3 = Theme.FontColor
+        TabButton.TextSize = 14
+
+        local TabCorner = Instance.new("UICorner")
+        TabCorner.CornerRadius = Theme.CornerRadius
+        TabCorner.Parent = TabButton
+
+        local TabContent = Instance.new("CanvasGroup")
+        TabContent.Name = "Content"
+        TabContent.Parent = MainWindow
+        TabContent.Size = UDim2.new(1, 0, 1, -100)
+        TabContent.Position = UDim2.new(0, 0, 0, 100)
+        TabContent.BackgroundTransparency = 1
+        TabContent.GroupTransparency = 1
         
-        local TabObject = {}; TabObject.Button = TabButton; TabObject.Content = TabContent; TabObject.SubTabs = {}; TabObject.HasSubTabs = false
+        local TabObject = {
+            Button = TabButton,
+            Content = TabContent,
+            SubTabs = {},
+            HasSubTabs = false
+        }
         
-        local SubTabHolder = Instance.new("ScrollingFrame"); SubTabHolder.Name = "SubTabHolder"; SubTabHolder.Parent = TabContent; SubTabHolder.Size = UDim2.new(1, 0, 0, 25); SubTabHolder.BackgroundTransparency = 1; SubTabHolder.BorderSizePixel = 0; SubTabHolder.ScrollingDirection = Enum.ScrollingDirection.X; SubTabHolder.ScrollBarImageColor3 = Color3.new(0,0,0); SubTabHolder.ScrollBarThickness = 0
-        local SubTabLayout = Instance.new("UIListLayout"); SubTabLayout.Parent = SubTabHolder; SubTabLayout.FillDirection = Enum.FillDirection.Horizontal; SubTabLayout.Padding = UDim.new(0, 5); SubTabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        local SubTabHolder = Instance.new("ScrollingFrame")
+        SubTabHolder.Name = "SubTabHolder"
+        SubTabHolder.Parent = TabContent
+        SubTabHolder.Size = UDim2.new(1, 0, 0, 25)
+        SubTabHolder.Position = UDim2.new(0,0,0,5)
+        SubTabHolder.BackgroundTransparency = 1
+        SubTabHolder.BorderSizePixel = 0
+        SubTabHolder.ScrollingDirection = Enum.ScrollingDirection.X
+        SubTabHolder.ScrollBarImageColor3 = Color3.new(0,0,0)
+        SubTabHolder.ScrollBarThickness = 0
+
+        local SubTabLayout = Instance.new("UIListLayout")
+        SubTabLayout.Parent = SubTabHolder
+        SubTabLayout.FillDirection = Enum.FillDirection.Horizontal
+        SubTabLayout.Padding = UDim.new(0, 5)
+        SubTabLayout.SortOrder = Enum.SortOrder.LayoutOrder
         SubTabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() UpdateCanvasSize(SubTabHolder, SubTabLayout) end)
 
-        local ContentSeparatorLine = Instance.new("Frame"); ContentSeparatorLine.Name = "ContentSeparator"; ContentSeparatorLine.Parent = TabContent; ContentSeparatorLine.BackgroundColor3 = Theme.Background; ContentSeparatorLine.BorderSizePixel = 0; ContentSeparatorLine.Size = UDim2.new(1, 0, 0, 2); ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 30); ContentSeparatorLine.Visible = false
+        local ContentSeparatorLine = Instance.new("Frame")
+        ContentSeparatorLine.Name = "ContentSeparator"
+        ContentSeparatorLine.Parent = TabContent
+        ContentSeparatorLine.BackgroundColor3 = Theme.Background
+        ContentSeparatorLine.BorderSizePixel = 0
+        ContentSeparatorLine.Size = UDim2.new(1, 0, 0, 2)
+        ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 35)
+        ContentSeparatorLine.Visible = false
         
-        local ContentHolder = Instance.new("ScrollingFrame"); ContentHolder.Name = "ContentHolder"; ContentHolder.Parent = TabContent; ContentHolder.BackgroundTransparency = 1; ContentHolder.BorderSizePixel = 0; ContentHolder.Size = UDim2.new(1, 0, 1, -35); ContentHolder.Position = UDim2.new(0, 0, 0, 35); ContentHolder.ScrollBarThickness = 0
+        local ContentHolder = Instance.new("ScrollingFrame")
+        ContentHolder.Name = "ContentHolder"
+        ContentHolder.Parent = TabContent
+        ContentHolder.BackgroundTransparency = 1
+        ContentHolder.BorderSizePixel = 0
+        ContentHolder.Size = UDim2.new(1, 0, 1, -5)
+        ContentHolder.Position = UDim2.new(0, 0, 0, 5)
+        ContentHolder.ScrollBarThickness = 4
+        ContentHolder.Visible = false
         TabObject.Columns = CreateElementColumns(ContentHolder)
-        TabObject.AddSection = AddSection
         
         function TabObject:MakeSubTab(SubTabInfo)
-            TabObject.HasSubTabs = true
-            local SubTabButton = Instance.new("TextButton"); SubTabButton.Name = SubTabInfo.Name; SubTabButton.Parent = SubTabHolder; SubTabButton.Size = UDim2.new(0, 100, 1, 0); SubTabButton.BackgroundColor3 = Theme.Secondary; SubTabButton.Text = SubTabInfo.Name; SubTabButton.Font = Theme.Font; SubTabButton.TextColor3 = Theme.FontColor; SubTabButton.TextSize = 12
-            local SubTabCorner = Instance.new("UICorner"); SubTabCorner.CornerRadius = Theme.CornerRadius; SubTabCorner.Parent = SubTabButton
+            self.HasSubTabs = true
+
+            local SubTabButton = Instance.new("TextButton")
+            SubTabButton.Name = SubTabInfo.Name
+            SubTabButton.Parent = SubTabHolder
+            SubTabButton.Size = UDim2.new(0, 100, 1, 0)
+            SubTabButton.BackgroundColor3 = Theme.Secondary
+            SubTabButton.Text = SubTabInfo.Name
+            SubTabButton.Font = Theme.Font
+            SubTabButton.TextColor3 = Theme.FontColor
+            SubTabButton.TextSize = 12
+
+            local SubTabCorner = Instance.new("UICorner")
+            SubTabCorner.CornerRadius = Theme.CornerRadius
+            SubTabCorner.Parent = SubTabButton
             
-            local SubTabObject = {Button = SubTabButton}
-            local SubContentHolder = Instance.new("ScrollingFrame"); SubContentHolder.Name = "SubContentHolder"; SubContentHolder.Parent = TabContent; SubContentHolder.BackgroundTransparency = 1; SubContentHolder.BorderSizePixel = 0; SubContentHolder.Size = UDim2.new(1, 0, 1, -35); SubContentHolder.Position = UDim2.new(0, 0, 0, 35); SubContentHolder.ScrollBarThickness = 0; SubContentHolder.Visible = false
+            local SubTabObject = { Button = SubTabButton }
+
+            local SubContentHolder = Instance.new("ScrollingFrame")
+            SubContentHolder.Name = "SubContentHolder"
+            SubContentHolder.Parent = TabContent
+            SubContentHolder.BackgroundTransparency = 1
+            SubContentHolder.BorderSizePixel = 0
+            SubContentHolder.Size = UDim2.new(1, 0, 1, -40)
+            SubContentHolder.Position = UDim2.new(0, 0, 0, 40)
+            SubContentHolder.ScrollBarThickness = 4
+            SubContentHolder.Visible = false
             SubTabObject.Content = SubContentHolder
             SubTabObject.Columns = CreateElementColumns(SubContentHolder)
-            SubTabObject.AddSection = AddSection
             
-            table.insert(TabObject.SubTabs, SubTabObject)
-            SubTabButton.MouseButton1Click:Connect(function()
+            function SubTabObject:AddSection(SectionInfo)
+                local Position = "left"
+                if SectionInfo.Position and type(SectionInfo.Position) == "string" then
+                    Position = string.lower(SectionInfo.Position)
+                end
+                
+                local ParentColumn = self.Columns[Position]
+                if not ParentColumn then
+                    warn("MoonLibV2: Invalid section position '"..tostring(SectionInfo.Position).."' provided. Defaulting to Left.")
+                    ParentColumn = self.Columns.Left
+                end
+
+                local SectionLabel = Instance.new("TextLabel")
+                SectionLabel.Name = SectionInfo.Name or "Section"
+                SectionLabel.Parent = ParentColumn
+                SectionLabel.Size = UDim2.new(1, 0, 0, 25)
+                SectionLabel.BackgroundTransparency = 1
+                SectionLabel.Font = Theme.Font
+                SectionLabel.TextColor3 = Theme.FontColorSecondary
+                SectionLabel.TextSize = 14
+                SectionLabel.Text = " " .. (SectionInfo.Name or "Section")
+                SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
+                
+                return SectionLabel
+            end
+
+            table.insert(self.SubTabs, SubTabObject)
+
+            SubTabButton.Activated:Connect(function()
                 ContentHolder.Visible = false
-                for _, OtherSubTab in ipairs(TabObject.SubTabs) do
+                for _, OtherSubTab in ipairs(self.SubTabs) do
                     OtherSubTab.Content.Visible = false
                     OtherSubTab.Button.BackgroundColor3 = Theme.Secondary
                 end
@@ -194,8 +271,33 @@ function MoonLibV2:MakeWindow(WindowInfo)
             end)
             return SubTabObject
         end
+
+        function TabObject:AddSection(SectionInfo)
+            local Position = "Right"
+            if SectionInfo.Position and type(SectionInfo.Position) == "string" then
+                Position = string.lower(SectionInfo.Position)
+            end
+            
+            local ParentColumn = self.Columns[Position]
+            if not ParentColumn then
+                warn("MoonLibV2: Invalid section position '"..tostring(SectionInfo.Position).."' provided. Defaulting to Left.")
+                ParentColumn = self.Columns.Right
+            end
+
+            local SectionLabel = Instance.new("TextLabel")
+            SectionLabel.Name = SectionInfo.Name or "Section"
+            SectionLabel.Parent = ParentColumn
+            SectionLabel.Size = UDim2.new(1, 0, 0, 25)
+            SectionLabel.BackgroundTransparency = 1
+            SectionLabel.Font = Theme.Font
+            SectionLabel.TextColor3 = Theme.FontColorSecondary
+            SectionLabel.TextSize = 14
+            SectionLabel.Text = " " .. (SectionInfo.Name or "Section")
+            SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
+            
+            return SectionLabel
+        end
         
-        table.insert(WindowObject.Tabs, TabObject)
         local function OnTabClick()
             if IsMinimized then return end
             
@@ -210,17 +312,51 @@ function MoonLibV2:MakeWindow(WindowInfo)
             ContentSeparatorLine.Visible = TabObject.HasSubTabs
             ContentHolder.Visible = not TabObject.HasSubTabs
 
+            for _, sTab in ipairs(TabObject.SubTabs) do sTab.Content.Visible = false end
+
             if TabObject.HasSubTabs and #TabObject.SubTabs > 0 then
-                for i, sTab in ipairs(TabObject.SubTabs) do
-                    sTab.Content.Visible = (i == 1)
-                    sTab.Button.BackgroundColor3 = (i == 1) and Theme.Accent or Theme.Secondary
+                local firstSubTab = TabObject.SubTabs[1]
+                firstSubTab.Content.Visible = true
+                firstSubTab.Button.BackgroundColor3 = Theme.Accent
+                for i = 2, #TabObject.SubTabs do
+                    TabObject.SubTabs[i].Button.BackgroundColor3 = Theme.Secondary
                 end
             end
         end
-        TabButton.MouseButton1Click:Connect(OnTabClick)
-        if #WindowObject.Tabs == 1 then task.spawn(OnTabClick) end
+        TabButton.Activated:Connect(OnTabClick)
+        TabObject.Select = OnTabClick
+        
+        table.insert(WindowObject.Tabs, TabObject)
         return TabObject
     end
+
+    function WindowObject:TabSelectOnPlay(TabObject)
+        if TabObject and TabObject.Select then
+            WindowObject.DefaultTab = TabObject
+        else
+            warn("MoonLibV2: TabSelectOnPlay(Tab) - O objeto fornecido não é uma aba válida.")
+        end
+    end
+
+    task.wait(1.5)
+    if ScreenGui:FindFirstChild("LoadScreen") then
+        local LoadFrame = ScreenGui.LoadScreen; local tweenInfo = TweenInfo.new(0.5)
+        TweenService:Create(LoadFrame, tweenInfo, {BackgroundTransparency = 1}):Play()
+        for _, child in ipairs(LoadFrame:GetChildren()) do if child:IsA("GuiObject") and child.Name ~= "UICorner" then if child:IsA("TextLabel") then TweenService:Create(child, tweenInfo, {TextTransparency = 1}):Play() else TweenService:Create(child, tweenInfo, {BackgroundTransparency = 1}):Play(); for _, subChild in ipairs(child:GetChildren()) do if subChild:IsA("GuiObject") and subChild.Name ~= "UICorner" then TweenService:Create(subChild, tweenInfo, {BackgroundTransparency = 1}):Play() end end end end end
+        task.wait(0.5); LoadFrame:Destroy()
+    end
+    
+    MainWindow.Visible = true
+    MainWindow.Size = UDim2.new(0, 0, 0, 0)
+    TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 540, 0, 380)}):Play()
+
+    task.spawn(function()
+        if WindowObject.DefaultTab then
+            WindowObject.DefaultTab:Select()
+        elseif #WindowObject.Tabs > 0 then
+            WindowObject.Tabs[1]:Select()
+        end
+    end)
 
     return WindowObject
 end
