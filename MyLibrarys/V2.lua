@@ -18,6 +18,10 @@ local Themes = {
 }
 Themes.dark = Themes.Dark
 
+local function UpdateCanvasSize(scrollingFrame, layout)
+    scrollingFrame.CanvasSize = UDim2.fromOffset(layout.AbsoluteContentSize.X, 0)
+end
+
 function MoonLibV2:MakeWindow(WindowInfo)
     local Theme = Themes[WindowInfo.Theme] or Themes.Dark
 
@@ -81,6 +85,10 @@ function MoonLibV2:MakeWindow(WindowInfo)
             MouseMoveConnection = UserInputService.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then local delta = UserInputService:GetMouseLocation() - initialMousePos; local newSize = initialSize + delta; local minSize = Vector2.new(250, 150); MainWindow.Size = UDim2.new(0, math.max(minSize.X, newSize.X), 0, math.max(minSize.Y, newSize.Y)) end end)
             MouseUpConnection = UserInputService.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then MainWindow.Draggable = true; if not IsMinimized then OriginalSizeY = MainWindow.Size.Y.Offset end; if MouseMoveConnection then MouseMoveConnection:Disconnect() end; if MouseUpConnection then MouseUpConnection:Disconnect() end end end)
         end)
+        
+        TabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            UpdateCanvasSize(WindowObject.TabHolder, TabLayout)
+        end)
     end)
 
     task.wait(1.5)
@@ -106,6 +114,10 @@ function MoonLibV2:MakeWindow(WindowInfo)
         local ContentSeparatorLine = Instance.new("Frame"); ContentSeparatorLine.Name = "ContentSeparator"; ContentSeparatorLine.Parent = TabContent; ContentSeparatorLine.BackgroundColor3 = Theme.Background; ContentSeparatorLine.BorderSizePixel = 0; ContentSeparatorLine.Size = UDim2.new(1, 0, 0, 2); ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 5); ContentSeparatorLine.Visible = false
         local TabObject = {}; TabObject.Button = TabButton; TabObject.Content = TabContent; TabObject.SubTabs = {}; TabObject.SubTabHolder = SubTabHolder; TabObject.HasSubTabs = false; TabObject.ContentY = 15
         
+        SubTabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            UpdateCanvasSize(SubTabHolder, SubTabLayout)
+        end)
+
         function TabObject:MakeSubTab(SubTabInfo)
             if not TabObject.HasSubTabs then ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 30); TabObject.ContentY = 40 end
             TabObject.HasSubTabs = true
