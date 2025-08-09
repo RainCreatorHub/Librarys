@@ -56,8 +56,11 @@ function MoonLibV2:MakeWindow(WindowInfo)
         local SubTitleLabel = Instance.new("TextLabel"); SubTitleLabel.Name = "SubTitle"; SubTitleLabel.Parent = MainWindow; SubTitleLabel.Size = UDim2.new(1, -30, 0, 15); SubTitleLabel.Position = UDim2.new(0, 15, 0, 30); SubTitleLabel.BackgroundTransparency = 1; SubTitleLabel.Font = Enum.Font.Gotham; SubTitleLabel.TextColor3 = Theme.FontColorSecondary; SubTitleLabel.TextSize = 14; SubTitleLabel.Text = WindowInfo.SubTitle or ""; SubTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
         local HeaderSeparatorLine = Instance.new("Frame"); HeaderSeparatorLine.Name = "HeaderSeparator"; HeaderSeparatorLine.Parent = MainWindow; HeaderSeparatorLine.BackgroundColor3 = Theme.Background; HeaderSeparatorLine.BorderSizePixel = 0; HeaderSeparatorLine.Size = UDim2.new(1, -30, 0, 2); HeaderSeparatorLine.Position = UDim2.new(0.5, 0, 0, 55); HeaderSeparatorLine.AnchorPoint = Vector2.new(0.5, 0)
         WindowObject.Frame = MainWindow; WindowObject.Theme = Theme; WindowObject.Tabs = {}
-        WindowObject.TabHolder = Instance.new("Frame"); WindowObject.TabHolder.Name = "TabHolder"; WindowObject.TabHolder.Parent = MainWindow; WindowObject.TabHolder.Size = UDim2.new(1, -10, 0, 30); WindowObject.TabHolder.Position = UDim2.new(0, 5, 0, 65); WindowObject.TabHolder.BackgroundTransparency = 1
-        local TabLayout = Instance.new("UIListLayout"); TabLayout.Parent = WindowObject.TabHolder; TabLayout.FillDirection = Enum.FillDirection.Horizontal; TabLayout.Padding = UDim.new(0, 5)
+        
+        WindowObject.TabHolder = Instance.new("ScrollingFrame"); WindowObject.TabHolder.Name = "TabHolder"; WindowObject.TabHolder.Parent = MainWindow; WindowObject.TabHolder.Size = UDim2.new(1, -10, 0, 30); WindowObject.TabHolder.Position = UDim2.new(0, 5, 0, 65); WindowObject.TabHolder.BackgroundTransparency = 1; WindowObject.TabHolder.BorderSizePixel = 0; WindowObject.TabHolder.ScrollingDirection = Enum.ScrollingDirection.X; WindowObject.TabHolder.ScrollBarImageColor3 = Color3.new(0,0,0); WindowObject.TabHolder.ScrollBarThickness = 0
+        
+        local TabLayout = Instance.new("UIListLayout"); TabLayout.Parent = WindowObject.TabHolder; TabLayout.FillDirection = Enum.FillDirection.Horizontal; TabLayout.Padding = UDim.new(0, 5); TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        
         local IsMinimized = false; local OriginalSizeY = MainWindow.Size.Y.Offset
         local CloseButton = Instance.new("TextButton"); CloseButton.Name = "CloseButton"; CloseButton.Parent = TitleBar; CloseButton.Size = UDim2.new(0, 20, 0, 20); CloseButton.Position = UDim2.new(1, -25, 0.5, 0); CloseButton.AnchorPoint = Vector2.new(0.5, 0.5); CloseButton.BackgroundColor3 = Theme.Primary; CloseButton.Text = "X"; CloseButton.Font = Theme.Font; CloseButton.TextColor3 = Theme.FontColor; CloseButton.TextSize = 14
         CloseButton.MouseButton1Click:Connect(function() local tween = TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.fromOffset(0,0), Position = UDim2.fromOffset(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)}); tween:Play(); tween.Completed:Wait(); ScreenGui:Destroy() end)
@@ -95,10 +98,14 @@ function MoonLibV2:MakeWindow(WindowInfo)
         local TabButton = Instance.new("TextButton"); TabButton.Name = TabInfo.Name; TabButton.Parent = WindowObject.TabHolder; TabButton.Size = UDim2.new(0, 100, 1, 0); TabButton.BackgroundColor3 = Theme.Secondary; TabButton.Text = TabInfo.Name; TabButton.Font = Theme.Font; TabButton.TextColor3 = Theme.FontColor; TabButton.TextSize = 14
         local TabCorner = Instance.new("UICorner"); TabCorner.CornerRadius = Theme.CornerRadius; TabCorner.Parent = TabButton
         local TabContent = Instance.new("CanvasGroup"); TabContent.Name = "Content"; TabContent.Parent = MainWindow; TabContent.Size = UDim2.new(1, -10, 1, -105); TabContent.Position = UDim2.new(0, 5, 0, 100); TabContent.BackgroundTransparency = 1; TabContent.GroupTransparency = 1
-        local SubTabHolder = Instance.new("Frame"); SubTabHolder.Name = "SubTabHolder"; SubTabHolder.Parent = TabContent; SubTabHolder.Size = UDim2.new(1, 0, 0, 25); SubTabHolder.BackgroundTransparency = 1
-        local SubTabLayout = Instance.new("UIListLayout"); SubTabLayout.Parent = SubTabHolder; SubTabLayout.FillDirection = Enum.FillDirection.Horizontal; SubTabLayout.Padding = UDim.new(0, 5)
+        
+        local SubTabHolder = Instance.new("ScrollingFrame"); SubTabHolder.Name = "SubTabHolder"; SubTabHolder.Parent = TabContent; SubTabHolder.Size = UDim2.new(1, 0, 0, 25); SubTabHolder.BackgroundTransparency = 1; SubTabHolder.BorderSizePixel = 0; SubTabHolder.ScrollingDirection = Enum.ScrollingDirection.X; SubTabHolder.ScrollBarImageColor3 = Color3.new(0,0,0); SubTabHolder.ScrollBarThickness = 0
+        
+        local SubTabLayout = Instance.new("UIListLayout"); SubTabLayout.Parent = SubTabHolder; SubTabLayout.FillDirection = Enum.FillDirection.Horizontal; SubTabLayout.Padding = UDim.new(0, 5); SubTabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        
         local ContentSeparatorLine = Instance.new("Frame"); ContentSeparatorLine.Name = "ContentSeparator"; ContentSeparatorLine.Parent = TabContent; ContentSeparatorLine.BackgroundColor3 = Theme.Background; ContentSeparatorLine.BorderSizePixel = 0; ContentSeparatorLine.Size = UDim2.new(1, 0, 0, 2); ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 5); ContentSeparatorLine.Visible = false
         local TabObject = {}; TabObject.Button = TabButton; TabObject.Content = TabContent; TabObject.SubTabs = {}; TabObject.SubTabHolder = SubTabHolder; TabObject.HasSubTabs = false; TabObject.ContentY = 15
+        
         function TabObject:MakeSubTab(SubTabInfo)
             if not TabObject.HasSubTabs then ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 30); TabObject.ContentY = 40 end
             TabObject.HasSubTabs = true
@@ -113,6 +120,7 @@ function MoonLibV2:MakeWindow(WindowInfo)
             end)
             return SubTabObject
         end
+        
         table.insert(WindowObject.Tabs, TabObject)
         local function OnTabClick()
             if IsMinimized then return end
