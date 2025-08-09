@@ -27,7 +27,7 @@ local function CreateElementColumns(parent)
     ColumnsContainer.Name = "ElementColumns"
     ColumnsContainer.Parent = parent
     ColumnsContainer.BackgroundTransparency = 1
-    ColumnsContainer.Size = UDim2.new(1, 0, 1, 0)
+    ColumnsContainer.Size = UDim2.new(1, 0, 0, 200)
 
     local Layout = Instance.new("UIListLayout")
     Layout.Parent = ColumnsContainer
@@ -159,35 +159,38 @@ function MoonLibV2:MakeWindow(WindowInfo)
         local TabCorner = Instance.new("UICorner"); TabCorner.CornerRadius = Theme.CornerRadius; TabCorner.Parent = TabButton
         local TabContent = Instance.new("CanvasGroup"); TabContent.Name = "Content"; TabContent.Parent = MainWindow; TabContent.Size = UDim2.new(1, -10, 1, -105); TabContent.Position = UDim2.new(0, 5, 0, 100); TabContent.BackgroundTransparency = 1; TabContent.GroupTransparency = 1
         
+        local TabObject = {}; TabObject.Button = TabButton; TabObject.Content = TabContent; TabObject.SubTabs = {}; TabObject.HasSubTabs = false
+        
         local SubTabHolder = Instance.new("ScrollingFrame"); SubTabHolder.Name = "SubTabHolder"; SubTabHolder.Parent = TabContent; SubTabHolder.Size = UDim2.new(1, 0, 0, 25); SubTabHolder.BackgroundTransparency = 1; SubTabHolder.BorderSizePixel = 0; SubTabHolder.ScrollingDirection = Enum.ScrollingDirection.X; SubTabHolder.ScrollBarImageColor3 = Color3.new(0,0,0); SubTabHolder.ScrollBarThickness = 0
-        
         local SubTabLayout = Instance.new("UIListLayout"); SubTabLayout.Parent = SubTabHolder; SubTabLayout.FillDirection = Enum.FillDirection.Horizontal; SubTabLayout.Padding = UDim.new(0, 5); SubTabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        
-        local ContentSeparatorLine = Instance.new("Frame"); ContentSeparatorLine.Name = "ContentSeparator"; ContentSeparatorLine.Parent = TabContent; ContentSeparatorLine.BackgroundColor3 = Theme.Background; ContentSeparatorLine.BorderSizePixel = 0; ContentSeparatorLine.Size = UDim2.new(1, 0, 0, 2); ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 30); ContentSeparatorLine.Visible = false
-        
-        local TabObject = {}; TabObject.Button = TabButton; TabObject.Content = TabContent; TabObject.SubTabs = {}; TabObject.SubTabHolder = SubTabHolder; TabObject.HasSubTabs = false
-        
-        local ContentWrapper = Instance.new("Frame"); ContentWrapper.Name = "ContentWrapper"; ContentWrapper.Parent = TabContent; ContentWrapper.Size = UDim2.new(1, 0, 1, -35); ContentWrapper.Position = UDim2.new(0, 0, 0, 35); ContentWrapper.BackgroundTransparency = 1
-        TabObject.Columns = CreateElementColumns(ContentWrapper)
-        TabObject.AddSection = AddSection
-        
         SubTabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() UpdateCanvasSize(SubTabHolder, SubTabLayout) end)
 
+        local ContentSeparatorLine = Instance.new("Frame"); ContentSeparatorLine.Name = "ContentSeparator"; ContentSeparatorLine.Parent = TabContent; ContentSeparatorLine.BackgroundColor3 = Theme.Background; ContentSeparatorLine.BorderSizePixel = 0; ContentSeparatorLine.Size = UDim2.new(1, 0, 0, 2); ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 30); ContentSeparatorLine.Visible = false
+        
+        local ContentHolder = Instance.new("ScrollingFrame"); ContentHolder.Name = "ContentHolder"; ContentHolder.Parent = TabContent; ContentHolder.BackgroundTransparency = 1; ContentHolder.BorderSizePixel = 0; ContentHolder.Size = UDim2.new(1, 0, 1, -35); ContentHolder.Position = UDim2.new(0, 0, 0, 35); ContentHolder.ScrollBarThickness = 0
+        TabObject.Columns = CreateElementColumns(ContentHolder)
+        TabObject.AddSection = AddSection
+        
         function TabObject:MakeSubTab(SubTabInfo)
-            if not TabObject.HasSubTabs then ContentSeparatorLine.Visible = true end
             TabObject.HasSubTabs = true
             local SubTabButton = Instance.new("TextButton"); SubTabButton.Name = SubTabInfo.Name; SubTabButton.Parent = SubTabHolder; SubTabButton.Size = UDim2.new(0, 100, 1, 0); SubTabButton.BackgroundColor3 = Theme.Secondary; SubTabButton.Text = SubTabInfo.Name; SubTabButton.Font = Theme.Font; SubTabButton.TextColor3 = Theme.FontColor; SubTabButton.TextSize = 12
             local SubTabCorner = Instance.new("UICorner"); SubTabCorner.CornerRadius = Theme.CornerRadius; SubTabCorner.Parent = SubTabButton
-            local SubTabContent = Instance.new("CanvasGroup"); SubTabContent.Name = "SubContent"; SubTabContent.Parent = TabContent; SubTabContent.Size = UDim2.new(1, 0, 1, -35); SubTabContent.Position = UDim2.new(0, 0, 0, 35); SubTabContent.BackgroundTransparency = 1; SubTabContent.GroupTransparency = 1
             
-            local SubTabObject = {Button = SubTabButton, Content = SubTabContent}
-            SubTabObject.Columns = CreateElementColumns(SubTabContent)
+            local SubTabObject = {Button = SubTabButton}
+            local SubContentHolder = Instance.new("ScrollingFrame"); SubContentHolder.Name = "SubContentHolder"; SubContentHolder.Parent = TabContent; SubContentHolder.BackgroundTransparency = 1; SubContentHolder.BorderSizePixel = 0; SubContentHolder.Size = UDim2.new(1, 0, 1, -35); SubContentHolder.Position = UDim2.new(0, 0, 0, 35); SubContentHolder.ScrollBarThickness = 0; SubContentHolder.Visible = false
+            SubTabObject.Content = SubContentHolder
+            SubTabObject.Columns = CreateElementColumns(SubContentHolder)
             SubTabObject.AddSection = AddSection
             
             table.insert(TabObject.SubTabs, SubTabObject)
             SubTabButton.MouseButton1Click:Connect(function()
-                for _, OtherSubTab in ipairs(TabObject.SubTabs) do TweenService:Create(OtherSubTab.Content, TweenInfo.new(0.2), {GroupTransparency = 1}):Play(); OtherSubTab.Button.BackgroundColor3 = Theme.Secondary end
-                TweenService:Create(SubTabContent, TweenInfo.new(0.2), {GroupTransparency = 0}):Play(); SubTabButton.BackgroundColor3 = Theme.Accent
+                ContentHolder.Visible = false
+                for _, OtherSubTab in ipairs(TabObject.SubTabs) do
+                    OtherSubTab.Content.Visible = false
+                    OtherSubTab.Button.BackgroundColor3 = Theme.Secondary
+                end
+                SubContentHolder.Visible = true
+                SubTabButton.BackgroundColor3 = Theme.Accent
             end)
             return SubTabObject
         end
@@ -195,15 +198,23 @@ function MoonLibV2:MakeWindow(WindowInfo)
         table.insert(WindowObject.Tabs, TabObject)
         local function OnTabClick()
             if IsMinimized then return end
-            for _, OtherTab in ipairs(WindowObject.Tabs) do TweenService:Create(OtherTab.Content, TweenInfo.new(0.2), {GroupTransparency = 1}):Play(); OtherTab.Button.BackgroundColor3 = Theme.Secondary end
-            TweenService:Create(TabContent, TweenInfo.new(0.2), {GroupTransparency = 0}):Play(); TabButton.BackgroundColor3 = Theme.Accent
             
-            if not TabObject.HasSubTabs then ContentSeparatorLine.Visible = false else ContentSeparatorLine.Visible = true end
+            for _, OtherTab in ipairs(WindowObject.Tabs) do
+                TweenService:Create(OtherTab.Content, TweenInfo.new(0.2), {GroupTransparency = 1}):Play()
+                OtherTab.Button.BackgroundColor3 = Theme.Secondary
+            end
+            
+            TweenService:Create(TabContent, TweenInfo.new(0.2), {GroupTransparency = 0}):Play()
+            TabButton.BackgroundColor3 = Theme.Accent
+            
+            ContentSeparatorLine.Visible = TabObject.HasSubTabs
+            ContentHolder.Visible = not TabObject.HasSubTabs
 
             if TabObject.HasSubTabs and #TabObject.SubTabs > 0 then
-                for i, sTab in ipairs(TabObject.SubTabs) do local targetTransparency = (i == 1) and 0 or 1; TweenService:Create(sTab.Content, TweenInfo.new(0.2), {GroupTransparency = targetTransparency}):Play(); sTab.Button.BackgroundColor3 = (i == 1) and Theme.Accent or Theme.Secondary end
-            else
-                for _, sTab in ipairs(TabObject.SubTabs) do TweenService:Create(sTab.Content, TweenInfo.new(0.2), {GroupTransparency = 1}):Play() end
+                for i, sTab in ipairs(TabObject.SubTabs) do
+                    sTab.Content.Visible = (i == 1)
+                    sTab.Button.BackgroundColor3 = (i == 1) and Theme.Accent or Theme.Secondary
+                end
             end
         end
         TabButton.MouseButton1Click:Connect(OnTabClick)
