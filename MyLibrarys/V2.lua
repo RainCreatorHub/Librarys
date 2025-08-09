@@ -22,6 +22,35 @@ local function UpdateCanvasSize(scrollingFrame, layout)
     scrollingFrame.CanvasSize = UDim2.fromOffset(layout.AbsoluteContentSize.X, 0)
 end
 
+local function CreateElementColumns(parent)
+    local ColumnsContainer = Instance.new("Frame")
+    ColumnsContainer.Name = "ElementColumns"
+    ColumnsContainer.Parent = parent
+    ColumnsContainer.BackgroundTransparency = 1
+    ColumnsContainer.Size = UDim2.new(1, 0, 1, 0)
+
+    local Layout = Instance.new("UIListLayout")
+    Layout.Parent = ColumnsContainer
+    Layout.FillDirection = Enum.FillDirection.Horizontal
+    Layout.Padding = UDim.new(0, 10)
+
+    local LeftColumn = Instance.new("Frame")
+    LeftColumn.Name = "Left"
+    LeftColumn.Parent = ColumnsContainer
+    LeftColumn.BackgroundTransparency = 1
+    LeftColumn.Size = UDim2.new(0.5, -5, 1, 0)
+    Instance.new("UIListLayout", LeftColumn).Padding = UDim.new(0, 5)
+
+    local RightColumn = Instance.new("Frame")
+    RightColumn.Name = "Right"
+    RightColumn.Parent = ColumnsContainer
+    RightColumn.BackgroundTransparency = 1
+    RightColumn.Size = UDim2.new(0.5, -5, 1, 0)
+    Instance.new("UIListLayout", RightColumn).Padding = UDim.new(0, 5)
+
+    return { Left = LeftColumn, Right = RightColumn }
+end
+
 function MoonLibV2:MakeWindow(WindowInfo)
     local Theme = Themes[WindowInfo.Theme] or Themes.Dark
 
@@ -102,6 +131,29 @@ function MoonLibV2:MakeWindow(WindowInfo)
     MainWindow.Visible = true; MainWindow.Size = UDim2.new(0, 0, 0, 0)
     TweenService:Create(MainWindow, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 540, 0, 380)}):Play()
 
+    local function AddSection(self, SectionInfo)
+        local Position = string.lower(SectionInfo.Position or "left")
+        local ParentColumn = self.Columns[Position]
+        
+        if not ParentColumn then
+            warn("MoonLibV2: Invalid section position '"..tostring(SectionInfo.Position).."' provided. Defaulting to Left.")
+            ParentColumn = self.Columns.Left
+        end
+
+        local SectionLabel = Instance.new("TextLabel")
+        SectionLabel.Name = SectionInfo.Name or "Section"
+        SectionLabel.Parent = ParentColumn
+        SectionLabel.Size = UDim2.new(1, 0, 0, 25)
+        SectionLabel.BackgroundTransparency = 1
+        SectionLabel.Font = Theme.Font
+        SectionLabel.TextColor3 = Theme.FontColorSecondary
+        SectionLabel.TextSize = 14
+        SectionLabel.Text = " " .. (SectionInfo.Name or "Section")
+        SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
+        
+        return SectionLabel
+    end
+
     function WindowObject:MakeTab(TabInfo)
         local TabButton = Instance.new("TextButton"); TabButton.Name = TabInfo.Name; TabButton.Parent = WindowObject.TabHolder; TabButton.Size = UDim2.new(0, 100, 1, 0); TabButton.BackgroundColor3 = Theme.Secondary; TabButton.Text = TabInfo.Name; TabButton.Font = Theme.Font; TabButton.TextColor3 = Theme.FontColor; TabButton.TextSize = 14
         local TabCorner = Instance.new("UICorner"); TabCorner.CornerRadius = Theme.CornerRadius; TabCorner.Parent = TabButton
@@ -111,20 +163,27 @@ function MoonLibV2:MakeWindow(WindowInfo)
         
         local SubTabLayout = Instance.new("UIListLayout"); SubTabLayout.Parent = SubTabHolder; SubTabLayout.FillDirection = Enum.FillDirection.Horizontal; SubTabLayout.Padding = UDim.new(0, 5); SubTabLayout.SortOrder = Enum.SortOrder.LayoutOrder
         
-        local ContentSeparatorLine = Instance.new("Frame"); ContentSeparatorLine.Name = "ContentSeparator"; ContentSeparatorLine.Parent = TabContent; ContentSeparatorLine.BackgroundColor3 = Theme.Background; ContentSeparatorLine.BorderSizePixel = 0; ContentSeparatorLine.Size = UDim2.new(1, 0, 0, 2); ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 5); ContentSeparatorLine.Visible = false
-        local TabObject = {}; TabObject.Button = TabButton; TabObject.Content = TabContent; TabObject.SubTabs = {}; TabObject.SubTabHolder = SubTabHolder; TabObject.HasSubTabs = false; TabObject.ContentY = 15
+        local ContentSeparatorLine = Instance.new("Frame"); ContentSeparatorLine.Name = "ContentSeparator"; ContentSeparatorLine.Parent = TabContent; ContentSeparatorLine.BackgroundColor3 = Theme.Background; ContentSeparatorLine.BorderSizePixel = 0; ContentSeparatorLine.Size = UDim2.new(1, 0, 0, 2); ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 30); ContentSeparatorLine.Visible = false
         
-        SubTabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            UpdateCanvasSize(SubTabHolder, SubTabLayout)
-        end)
+        local TabObject = {}; TabObject.Button = TabButton; TabObject.Content = TabContent; TabObject.SubTabs = {}; TabObject.SubTabHolder = SubTabHolder; TabObject.HasSubTabs = false
+        
+        local ContentWrapper = Instance.new("Frame"); ContentWrapper.Name = "ContentWrapper"; ContentWrapper.Parent = TabContent; ContentWrapper.Size = UDim2.new(1, 0, 1, -35); ContentWrapper.Position = UDim2.new(0, 0, 0, 35); ContentWrapper.BackgroundTransparency = 1
+        TabObject.Columns = CreateElementColumns(ContentWrapper)
+        TabObject.AddSection = AddSection
+        
+        SubTabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() UpdateCanvasSize(SubTabHolder, SubTabLayout) end)
 
         function TabObject:MakeSubTab(SubTabInfo)
-            if not TabObject.HasSubTabs then ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 30); TabObject.ContentY = 40 end
+            if not TabObject.HasSubTabs then ContentSeparatorLine.Visible = true end
             TabObject.HasSubTabs = true
             local SubTabButton = Instance.new("TextButton"); SubTabButton.Name = SubTabInfo.Name; SubTabButton.Parent = SubTabHolder; SubTabButton.Size = UDim2.new(0, 100, 1, 0); SubTabButton.BackgroundColor3 = Theme.Secondary; SubTabButton.Text = SubTabInfo.Name; SubTabButton.Font = Theme.Font; SubTabButton.TextColor3 = Theme.FontColor; SubTabButton.TextSize = 12
             local SubTabCorner = Instance.new("UICorner"); SubTabCorner.CornerRadius = Theme.CornerRadius; SubTabCorner.Parent = SubTabButton
             local SubTabContent = Instance.new("CanvasGroup"); SubTabContent.Name = "SubContent"; SubTabContent.Parent = TabContent; SubTabContent.Size = UDim2.new(1, 0, 1, -35); SubTabContent.Position = UDim2.new(0, 0, 0, 35); SubTabContent.BackgroundTransparency = 1; SubTabContent.GroupTransparency = 1
-            local SubTabObject = {Button = SubTabButton, Content = SubTabContent, ContentY = 5}
+            
+            local SubTabObject = {Button = SubTabButton, Content = SubTabContent}
+            SubTabObject.Columns = CreateElementColumns(SubTabContent)
+            SubTabObject.AddSection = AddSection
+            
             table.insert(TabObject.SubTabs, SubTabObject)
             SubTabButton.MouseButton1Click:Connect(function()
                 for _, OtherSubTab in ipairs(TabObject.SubTabs) do TweenService:Create(OtherSubTab.Content, TweenInfo.new(0.2), {GroupTransparency = 1}):Play(); OtherSubTab.Button.BackgroundColor3 = Theme.Secondary end
@@ -138,7 +197,9 @@ function MoonLibV2:MakeWindow(WindowInfo)
             if IsMinimized then return end
             for _, OtherTab in ipairs(WindowObject.Tabs) do TweenService:Create(OtherTab.Content, TweenInfo.new(0.2), {GroupTransparency = 1}):Play(); OtherTab.Button.BackgroundColor3 = Theme.Secondary end
             TweenService:Create(TabContent, TweenInfo.new(0.2), {GroupTransparency = 0}):Play(); TabButton.BackgroundColor3 = Theme.Accent
-            ContentSeparatorLine.Visible = true
+            
+            if not TabObject.HasSubTabs then ContentSeparatorLine.Visible = false else ContentSeparatorLine.Visible = true end
+
             if TabObject.HasSubTabs and #TabObject.SubTabs > 0 then
                 for i, sTab in ipairs(TabObject.SubTabs) do local targetTransparency = (i == 1) and 0 or 1; TweenService:Create(sTab.Content, TweenInfo.new(0.2), {GroupTransparency = targetTransparency}):Play(); sTab.Button.BackgroundColor3 = (i == 1) and Theme.Accent or Theme.Secondary end
             else
