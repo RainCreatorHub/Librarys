@@ -1,7 +1,6 @@
 local MoonLibV2 = {}
 MoonLibV2.__index = MoonLibV2
 
--- Tabela de temas.
 local Themes = {
     Dark = {
         Background = Color3.fromRGB(24, 25, 29),
@@ -15,23 +14,19 @@ local Themes = {
     }
 }
 Themes.dark = Themes.Dark
-function MoonLibV2:MakeWindow(Info)
 
-    -- Define o tema a ser usado. Padrão é "Dark" se não for especificado ou for inválido.
+function MoonLibV2:MakeWindow(Info)
     local theme = Themes[Info.Theme] or Themes.Dark
 
-    -- Garante que a GUI antiga seja removida se o script for executado novamente
     if game:GetService("CoreGui"):FindFirstChild("MoonLibV2_GUI") then
         game:GetService("CoreGui"):FindFirstChild("MoonLibV2_GUI"):Destroy()
     end
 
-    -- Cria a base da GUI (ScreenGui)
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "MoonLibV2_GUI"
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screenGui.Parent = game:GetService("CoreGui")
 
-    -- Tela de Carregamento (Load Screen)
     if Info.LoadScreen then
         local loadFrame = Instance.new("Frame")
         loadFrame.Name = "LoadScreen"
@@ -39,7 +34,6 @@ function MoonLibV2:MakeWindow(Info)
         loadFrame.BackgroundColor3 = theme.Background
         loadFrame.Size = UDim2.new(1, 0, 1, 0)
         loadFrame.ZIndex = 10
-
         local loadText = Instance.new("TextLabel")
         loadText.Name = "LoadInfo"
         loadText.Parent = loadFrame
@@ -51,7 +45,6 @@ function MoonLibV2:MakeWindow(Info)
         loadText.TextColor3 = theme.FontColor
         loadText.TextSize = 22
         loadText.Text = Info.LoadScreenInfo or "Carregando..."
-
         wait(2)
         for i = 1, 10 do
             loadFrame.BackgroundTransparency = i / 10
@@ -61,7 +54,6 @@ function MoonLibV2:MakeWindow(Info)
         loadFrame:Destroy()
     end
 
-    -- Janela Principal (Frame)
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "JanelaPrincipal"
     mainFrame.Parent = screenGui
@@ -72,19 +64,17 @@ function MoonLibV2:MakeWindow(Info)
     mainFrame.BorderSizePixel = 0
     mainFrame.Active = true
     mainFrame.Draggable = true
-
+    
     local uiCorner = Instance.new("UICorner")
     uiCorner.CornerRadius = theme.CornerRadius
     uiCorner.Parent = mainFrame
-
-    -- Barra de Título
+    
     local titleBar = Instance.new("Frame")
     titleBar.Name = "TitleBar"
     titleBar.Parent = mainFrame
     titleBar.Size = UDim2.new(1, 0, 0, 40)
     titleBar.BackgroundTransparency = 1
-
-    -- Título da Janela
+    
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Name = "Title"
     titleLabel.Parent = titleBar
@@ -96,8 +86,7 @@ function MoonLibV2:MakeWindow(Info)
     titleLabel.TextSize = 20
     titleLabel.Text = Info.Name or "Janela"
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-    -- Subtítulo da Janela
+    
     local subTitleLabel = Instance.new("TextLabel")
     subTitleLabel.Name = "SubTitle"
     subTitleLabel.Parent = mainFrame
@@ -109,7 +98,15 @@ function MoonLibV2:MakeWindow(Info)
     subTitleLabel.TextSize = 14
     subTitleLabel.Text = Info.SubTitle or ""
     subTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    local windowObject = {}
+    windowObject.Frame = mainFrame
+    
+    function windowObject:AddTab(tabInfo)
+    print("Fazendo abas.")
+    end
 
-    print("MoonLibV2: Janela '" .. (Info.Name or "Indefinida") .. "' criada com sucesso.")
-    return mainFrame
+    return windowObject
 end
+
+return MoonLibV2
