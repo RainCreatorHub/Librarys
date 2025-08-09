@@ -233,7 +233,7 @@ function MoonLibV2:MakeWindow(WindowInfo)
         ResizeHandle.Position = UDim2.new(1, 0, 1, 0)
         ResizeHandle.AnchorPoint = Vector2.new(1, 1)
         ResizeHandle.BackgroundTransparency = 1
-        ResizeHandle.Text = ""
+        ResizeHandle.Text = "Re"
         ResizeHandle.AutoButtonColor = false
         
         ResizeHandle.MouseButton1Down:Connect(function()
@@ -268,9 +268,23 @@ function MoonLibV2:MakeWindow(WindowInfo)
     task.wait(1.5)
     if ScreenGui:FindFirstChild("LoadScreen") then
         local LoadFrame = ScreenGui.LoadScreen
-        local fadeOut = TweenService:Create(LoadFrame, TweenInfo.new(0.5), {GroupTransparency = 1})
-        fadeOut:Play()
-        fadeOut.Completed:Wait()
+        local tweenInfo = TweenInfo.new(0.5)
+        TweenService:Create(LoadFrame, tweenInfo, {BackgroundTransparency = 1}):Play()
+        for _, child in ipairs(LoadFrame:GetChildren()) do
+            if child:IsA("GuiObject") and child.Name ~= "UICorner" then
+                if child:IsA("TextLabel") then
+                    TweenService:Create(child, tweenInfo, {TextTransparency = 1}):Play()
+                else
+                    TweenService:Create(child, tweenInfo, {BackgroundTransparency = 1}):Play()
+                    for _, subChild in ipairs(child:GetChildren()) do
+                        if subChild:IsA("GuiObject") and subChild.Name ~= "UICorner" then
+                            TweenService:Create(subChild, tweenInfo, {BackgroundTransparency = 1}):Play()
+                        end
+                    end
+                end
+            end
+        end
+        task.wait(0.5)
         LoadFrame:Destroy()
     end
     
@@ -299,12 +313,18 @@ function MoonLibV2:MakeWindow(WindowInfo)
         TabContent.Size = UDim2.new(1, -10, 1, -105)
         TabContent.Position = UDim2.new(0, 5, 0, 100)
         TabContent.BackgroundTransparency = 1
-        TabContent.GroupTransparency = 1
-        TabContent.Visible = true
+        TabContent.ClipsDescendants = true
+        
+        local ContentWrapper = Instance.new("Frame")
+        ContentWrapper.Name = "ContentWrapper"
+        ContentWrapper.Parent = TabContent
+        ContentWrapper.Size = UDim2.new(1, 0, 1, 0)
+        ContentWrapper.BackgroundTransparency = 1
+        ContentWrapper.GroupTransparency = 1
         
         local SubTabHolder = Instance.new("Frame")
         SubTabHolder.Name = "SubTabHolder"
-        SubTabHolder.Parent = TabContent
+        SubTabHolder.Parent = ContentWrapper
         SubTabHolder.Size = UDim2.new(1, 0, 0, 25)
         SubTabHolder.BackgroundTransparency = 1
         
@@ -315,7 +335,7 @@ function MoonLibV2:MakeWindow(WindowInfo)
 
         local TabObject = {}
         TabObject.Button = TabButton
-        TabObject.Content = TabContent
+        TabObject.Content = ContentWrapper
         TabObject.SubTabs = {}
         TabObject.SubTabHolder = SubTabHolder
         TabObject.HasSubTabs = false
@@ -339,12 +359,11 @@ function MoonLibV2:MakeWindow(WindowInfo)
 
             local SubTabContent = Instance.new("Frame")
             SubTabContent.Name = "SubContent"
-            SubTabContent.Parent = TabContent
+            SubTabContent.Parent = ContentWrapper
             SubTabContent.Size = UDim2.new(1, 0, 1, -30)
             SubTabContent.Position = UDim2.new(0, 0, 0, 30)
             SubTabContent.BackgroundTransparency = 1
             SubTabContent.GroupTransparency = 1
-            SubTabContent.Visible = true
             
             local SubTabObject = {Button = SubTabButton, Content = SubTabContent}
             table.insert(TabObject.SubTabs, SubTabObject)
@@ -370,7 +389,7 @@ function MoonLibV2:MakeWindow(WindowInfo)
                 OtherTab.Button.BackgroundColor3 = Theme.Secondary
             end
             
-            TweenService:Create(TabContent, TweenInfo.new(0.2), {GroupTransparency = 0}):Play()
+            TweenService:Create(ContentWrapper, TweenInfo.new(0.2), {GroupTransparency = 0}):Play()
             TabButton.BackgroundColor3 = Theme.Accent
 
             if TabObject.HasSubTabs and #TabObject.SubTabs > 0 then
@@ -378,6 +397,10 @@ function MoonLibV2:MakeWindow(WindowInfo)
                     local targetTransparency = (i == 1) and 0 or 1
                     TweenService:Create(sTab.Content, TweenInfo.new(0.2), {GroupTransparency = targetTransparency}):Play()
                     sTab.Button.BackgroundColor3 = (i == 1) and Theme.Accent or Theme.Secondary
+                end
+            else
+                for _, sTab in ipairs(TabObject.SubTabs) do
+                    TweenService:Create(sTab.Content, TweenInfo.new(0.2), {GroupTransparency = 1}):Play()
                 end
             end
         end
