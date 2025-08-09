@@ -1,119 +1,239 @@
-local Lib = {}
-Lib.__index = Lib
+local MoonLibV2 = {}
+MoonLibV2.__index = MoonLibV2
 
 local Themes = {
     Dark = {
-        BG = Color3.fromRGB(24, 25, 29),
+        Background = Color3.fromRGB(24, 25, 29),
         Primary = Color3.fromRGB(44, 46, 51),
         Secondary = Color3.fromRGB(62, 64, 70),
         Accent = Color3.fromRGB(88, 101, 242),
-        Font = Color3.fromRGB(242, 242, 242),
-        Font2 = Color3.fromRGB(180, 180, 180),
-        FontName = Enum.Font.GothamSemibold,
-        Radius = UDim.new(0, 8)
+        FontColor = Color3.fromRGB(242, 242, 242),
+        FontColorSecondary = Color3.fromRGB(180, 180, 180),
+        Font = Enum.Font.GothamSemibold,
+        CornerRadius = UDim.new(0, 8)
     }
 }
 Themes.dark = Themes.Dark
 
-function Lib:MakeWindow(Info)
-    local th = Themes[Info.Theme] or Themes.Dark
+function MoonLibV2:MakeWindow(WindowInfo)
+    local Theme = Themes[WindowInfo.Theme] or Themes.Dark
 
     if game:GetService("CoreGui"):FindFirstChild("MoonLibV2_GUI") then
         game:GetService("CoreGui"):FindFirstChild("MoonLibV2_GUI"):Destroy()
     end
 
-    local sGui = Instance.new("ScreenGui")
-    sGui.Name = "MoonLibV2_GUI"; sGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling; sGui.Parent = game:GetService("CoreGui")
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "MoonLibV2_GUI"
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ScreenGui.Parent = game:GetService("CoreGui")
 
-    if Info.LoadScreen then
-        local lFrm = Instance.new("Frame")
-        lFrm.Name = "LoadScreen"; lFrm.Parent = sGui; lFrm.BackgroundColor3 = th.BG; lFrm.Size = UDim2.new(1, 0, 1, 0); lFrm.ZIndex = 10
-        local lTxt = Instance.new("TextLabel")
-        lTxt.Name = "LoadInfo"; lTxt.Parent = lFrm; lTxt.AnchorPoint = Vector2.new(0.5, 0.5); lTxt.Position = UDim2.new(0.5, 0, 0.5, 0); lTxt.Size = UDim2.new(0, 400, 0, 50); lTxt.BackgroundTransparency = 1; lTxt.Font = th.FontName; lTxt.TextColor3 = th.Font; lTxt.TextSize = 22; lTxt.Text = Info.LoadScreenInfo or "Carregando..."
+    if WindowInfo.LoadScreen then
+        local LoadFrame = Instance.new("Frame")
+        LoadFrame.Name = "LoadScreen"
+        LoadFrame.Parent = ScreenGui
+        LoadFrame.BackgroundColor3 = Theme.Background
+        LoadFrame.Size = UDim2.new(1, 0, 1, 0)
+        LoadFrame.ZIndex = 10
+        
+        local LoadLabel = Instance.new("TextLabel")
+        LoadLabel.Name = "LoadInfo"
+        LoadLabel.Parent = LoadFrame
+        LoadLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+        LoadLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+        LoadLabel.Size = UDim2.new(0, 400, 0, 50)
+        LoadLabel.BackgroundTransparency = 1
+        LoadLabel.Font = Theme.Font
+        LoadLabel.TextColor3 = Theme.FontColor
+        LoadLabel.TextSize = 22
+        LoadLabel.Text = WindowInfo.LoadScreenInfo or "Carregando..."
+        
         task.wait(2)
-        for i = 1, 10 do lFrm.BackgroundTransparency = i / 10; lTxt.TextTransparency = i / 10; task.wait(0.05) end
-        lFrm:Destroy()
+        for i = 1, 10 do
+            LoadFrame.BackgroundTransparency = i / 10
+            LoadLabel.TextTransparency = i / 10
+            task.wait(0.05)
+        end
+        LoadFrame:Destroy()
     end
 
-    local mFrm = Instance.new("Frame")
-    mFrm.Name = "Window"; mFrm.Parent = sGui; mFrm.AnchorPoint = Vector2.new(0.5, 0.5); mFrm.Position = UDim2.new(0.5, 0, 0.5, 0); mFrm.Size = UDim2.new(0, 500, 0, 300); mFrm.BackgroundColor3 = th.Primary; mFrm.BorderSizePixel = 0; mFrm.Active = true; mFrm.Draggable = true
-    local corner = Instance.new("UICorner"); corner.CornerRadius = th.Radius; corner.Parent = mFrm
-    local tBar = Instance.new("Frame"); tBar.Name = "TitleBar"; tBar.Parent = mFrm; tBar.Size = UDim2.new(1, 0, 0, 30); tBar.Position = UDim2.new(0, 0, 0, 5); tBar.BackgroundTransparency = 1
-    local tLbl = Instance.new("TextLabel"); tLbl.Name = "Title"; tLbl.Parent = tBar; tLbl.Size = UDim2.new(1, -15, 1, 0); tLbl.Position = UDim2.new(0, 15, 0, 0); tLbl.BackgroundTransparency = 1; tLbl.Font = th.FontName; tLbl.TextColor3 = th.Font; tLbl.TextSize = 20; tLbl.Text = Info.Name or "Window"; tLbl.TextXAlignment = Enum.TextXAlignment.Left
-    local sLbl = Instance.new("TextLabel"); sLbl.Name = "SubTitle"; sLbl.Parent = mFrm; sLbl.Size = UDim2.new(1, -30, 0, 15); sLbl.Position = UDim2.new(0, 15, 0, 30); sLbl.BackgroundTransparency = 1; sLbl.Font = Enum.Font.Gotham; sLbl.TextColor3 = th.Font2; sLbl.TextSize = 14; sLbl.Text = Info.SubTitle or ""; sLbl.TextXAlignment = Enum.TextXAlignment.Left
-    local line = Instance.new("Frame"); line.Name = "Separator"; line.Parent = mFrm; line.BackgroundColor3 = th.BG; line.BorderSizePixel = 0; line.Size = UDim2.new(1, -30, 0, 2); line.Position = UDim2.new(0.5, 0, 0, 55); line.AnchorPoint = Vector2.new(0.5, 0)
+    local MainWindow = Instance.new("Frame")
+    MainWindow.Name = "Window"
+    MainWindow.Parent = ScreenGui
+    MainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
+    MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
+    MainWindow.Size = UDim2.new(0, 500, 0, 300)
+    MainWindow.BackgroundColor3 = Theme.Primary
+    MainWindow.BorderSizePixel = 0
+    MainWindow.Active = true
+    MainWindow.Draggable = true
     
-    local winObj = {}
-    winObj.Frame = mFrm
-    winObj.Theme = th
-    winObj.Tabs = {}
-    winObj.TabHolder = Instance.new("Frame"); winObj.TabHolder.Name = "TabHolder"; winObj.TabHolder.Parent = mFrm; winObj.TabHolder.Size = UDim2.new(1, -10, 0, 30); winObj.TabHolder.Position = UDim2.new(0, 5, 0, 65); winObj.TabHolder.BackgroundTransparency = 1
-    local tabLayout = Instance.new("UIListLayout"); tabLayout.Parent = winObj.TabHolder; tabLayout.FillDirection = Enum.FillDirection.Horizontal; tabLayout.Padding = UDim.new(0, 5)
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = Theme.CornerRadius
+    Corner.Parent = MainWindow
+    
+    local TitleBar = Instance.new("Frame")
+    TitleBar.Name = "TitleBar"
+    TitleBar.Parent = MainWindow
+    TitleBar.Size = UDim2.new(1, 0, 0, 30)
+    TitleBar.Position = UDim2.new(0, 0, 0, 5)
+    TitleBar.BackgroundTransparency = 1
+    
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Name = "Title"
+    TitleLabel.Parent = TitleBar
+    TitleLabel.Size = UDim2.new(1, -15, 1, 0)
+    TitleLabel.Position = UDim2.new(0, 15, 0, 0)
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Font = Theme.Font
+    TitleLabel.TextColor3 = Theme.FontColor
+    TitleLabel.TextSize = 20
+    TitleLabel.Text = WindowInfo.Name or "Window"
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    local SubTitleLabel = Instance.new("TextLabel")
+    SubTitleLabel.Name = "SubTitle"
+    SubTitleLabel.Parent = MainWindow
+    SubTitleLabel.Size = UDim2.new(1, -30, 0, 15)
+    SubTitleLabel.Position = UDim2.new(0, 15, 0, 30)
+    SubTitleLabel.BackgroundTransparency = 1
+    SubTitleLabel.Font = Enum.Font.Gotham
+    SubTitleLabel.TextColor3 = Theme.FontColorSecondary
+    SubTitleLabel.TextSize = 14
+    SubTitleLabel.Text = WindowInfo.SubTitle or ""
+    SubTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-    function winObj:MakeTab(Info)
-        local tabBtn = Instance.new("TextButton")
-        tabBtn.Name = Info.Name; tabBtn.Parent = winObj.TabHolder; tabBtn.Size = UDim2.new(0, 100, 1, 0); tabBtn.BackgroundColor3 = th.Secondary; tabBtn.Text = Info.Name; tabBtn.Font = th.FontName; tabBtn.TextColor3 = th.Font; tabBtn.TextSize = 14
-        local tabCorner = Instance.new("UICorner"); tabCorner.CornerRadius = th.Radius; tabCorner.Parent = tabBtn
+    local SeparatorLine = Instance.new("Frame")
+    SeparatorLine.Name = "Separator"
+    SeparatorLine.Parent = MainWindow
+    SeparatorLine.BackgroundColor3 = Theme.Background
+    SeparatorLine.BorderSizePixel = 0
+    SeparatorLine.Size = UDim2.new(1, -30, 0, 2)
+    SeparatorLine.Position = UDim2.new(0.5, 0, 0, 55)
+    SeparatorLine.AnchorPoint = Vector2.new(0.5, 0)
+    
+    local WindowObject = {}
+    WindowObject.Frame = MainWindow
+    WindowObject.Theme = Theme
+    WindowObject.Tabs = {}
+    
+    WindowObject.TabHolder = Instance.new("Frame")
+    WindowObject.TabHolder.Name = "TabHolder"
+    WindowObject.TabHolder.Parent = MainWindow
+    WindowObject.TabHolder.Size = UDim2.new(1, -10, 0, 30)
+    WindowObject.TabHolder.Position = UDim2.new(0, 5, 0, 65)
+    WindowObject.TabHolder.BackgroundTransparency = 1
+    
+    local TabLayout = Instance.new("UIListLayout")
+    TabLayout.Parent = WindowObject.TabHolder
+    TabLayout.FillDirection = Enum.FillDirection.Horizontal
+    TabLayout.Padding = UDim.new(0, 5)
 
-        local content = Instance.new("Frame")
-        content.Name = "Content"; content.Parent = mFrm; content.Size = UDim2.new(1, -10, 1, -105); content.Position = UDim2.new(0, 5, 0, 100); content.BackgroundTransparency = 1; content.Visible = false
+    function WindowObject:MakeTab(TabInfo)
+        local TabButton = Instance.new("TextButton")
+        TabButton.Name = TabInfo.Name
+        TabButton.Parent = WindowObject.TabHolder
+        TabButton.Size = UDim2.new(0, 100, 1, 0)
+        TabButton.BackgroundColor3 = Theme.Secondary
+        TabButton.Text = TabInfo.Name
+        TabButton.Font = Theme.Font
+        TabButton.TextColor3 = Theme.FontColor
+        TabButton.TextSize = 14
         
-        local subTabHolder = Instance.new("Frame"); subTabHolder.Name = "SubTabHolder"; subTabHolder.Parent = content; subTabHolder.Size = UDim2.new(1, 0, 0, 25); subTabHolder.BackgroundTransparency = 1
-        local subTabLayout = Instance.new("UIListLayout"); subTabLayout.Parent = subTabHolder; subTabLayout.FillDirection = Enum.FillDirection.Horizontal; subTabLayout.Padding = UDim.new(0, 5)
+        local TabCorner = Instance.new("UICorner")
+        TabCorner.CornerRadius = Theme.CornerRadius
+        TabCorner.Parent = TabButton
 
-        local tabObj = {}
-        tabObj.Button = tabBtn; tabObj.Content = content; tabObj.SubTabs = {}; tabObj.SubTabHolder = subTabHolder; tabObj.HasSubTabs = false
+        local TabContent = Instance.new("Frame")
+        TabContent.Name = "Content"
+        TabContent.Parent = MainWindow
+        TabContent.Size = UDim2.new(1, -10, 1, -105)
+        TabContent.Position = UDim2.new(0, 5, 0, 100)
+        TabContent.BackgroundTransparency = 1
+        TabContent.Visible = false
+        
+        local SubTabHolder = Instance.new("Frame")
+        SubTabHolder.Name = "SubTabHolder"
+        SubTabHolder.Parent = TabContent
+        SubTabHolder.Size = UDim2.new(1, 0, 0, 25)
+        SubTabHolder.BackgroundTransparency = 1
+        
+        local SubTabLayout = Instance.new("UIListLayout")
+        SubTabLayout.Parent = SubTabHolder
+        SubTabLayout.FillDirection = Enum.FillDirection.Horizontal
+        SubTabLayout.Padding = UDim.new(0, 5)
 
-        function tabObj:MakeSubTab(sInfo)
-            tabObj.HasSubTabs = true
-            local sBtn = Instance.new("TextButton")
-            sBtn.Name = sInfo.Name; sBtn.Parent = subTabHolder; sBtn.Size = UDim2.new(0, 100, 1, 0); sBtn.BackgroundColor3 = th.Secondary; sBtn.Text = sInfo.Name; sBtn.Font = th.FontName; sBtn.TextColor3 = th.Font; sBtn.TextSize = 12
-            local sCorner = Instance.new("UICorner"); sCorner.CornerRadius = th.Radius; sCorner.Parent = sBtn
+        local TabObject = {}
+        TabObject.Button = TabButton
+        TabObject.Content = TabContent
+        TabObject.SubTabs = {}
+        TabObject.SubTabHolder = SubTabHolder
+        TabObject.HasSubTabs = false
 
-            local sContent = Instance.new("Frame")
-            sContent.Name = "SubContent"; sContent.Parent = content; sContent.Size = UDim2.new(1, 0, 1, -30); sContent.Position = UDim2.new(0, 0, 0, 30); sContent.BackgroundTransparency = 1; sContent.Visible = false
+        function TabObject:MakeSubTab(SubTabInfo)
+            TabObject.HasSubTabs = true
             
-            local sObj = {Button = sBtn, Content = sContent}
-            table.insert(tabObj.SubTabs, sObj)
+            local SubTabButton = Instance.new("TextButton")
+            SubTabButton.Name = SubTabInfo.Name
+            SubTabButton.Parent = SubTabHolder
+            SubTabButton.Size = UDim2.new(0, 100, 1, 0)
+            SubTabButton.BackgroundColor3 = Theme.Secondary
+            SubTabButton.Text = SubTabInfo.Name
+            SubTabButton.Font = Theme.Font
+            SubTabButton.TextColor3 = Theme.FontColor
+            SubTabButton.TextSize = 12
+            
+            local SubTabCorner = Instance.new("UICorner")
+            SubTabCorner.CornerRadius = Theme.CornerRadius
+            SubTabCorner.Parent = SubTabButton
 
-            sBtn.MouseButton1Click:Connect(function()
-                for _, otherSubTab in ipairs(tabObj.SubTabs) do
-                    otherSubTab.Content.Visible = false
-                    otherSubTab.Button.BackgroundColor3 = th.Secondary
+            local SubTabContent = Instance.new("Frame")
+            SubTabContent.Name = "SubContent"
+            SubTabContent.Parent = TabContent
+            SubTabContent.Size = UDim2.new(1, 0, 1, -30)
+            SubTabContent.Position = UDim2.new(0, 0, 0, 30)
+            SubTabContent.BackgroundTransparency = 1
+            SubTabContent.Visible = false
+            
+            local SubTabObject = {Button = SubTabButton, Content = SubTabContent}
+            table.insert(TabObject.SubTabs, SubTabObject)
+
+            SubTabButton.MouseButton1Click:Connect(function()
+                for _, OtherSubTab in ipairs(TabObject.SubTabs) do
+                    OtherSubTab.Content.Visible = false
+                    OtherSubTab.Button.BackgroundColor3 = Theme.Secondary
                 end
-                sContent.Visible = true
-                sBtn.BackgroundColor3 = th.Accent
+                SubTabContent.Visible = true
+                SubTabButton.BackgroundColor3 = Theme.Accent
             end)
-            return sObj
+            return SubTabObject
         end
         
-        table.insert(winObj.Tabs, tabObj)
+        table.insert(WindowObject.Tabs, TabObject)
 
-        tabBtn.MouseButton1Click:Connect(function()
-            for _, otherTab in ipairs(winObj.Tabs) do
-                otherTab.Content.Visible = false
-                otherTab.Button.BackgroundColor3 = th.Secondary
+        TabButton.MouseButton1Click:Connect(function()
+            for _, OtherTab in ipairs(WindowObject.Tabs) do
+                OtherTab.Content.Visible = false
+                OtherTab.Button.BackgroundColor3 = Theme.Secondary
             end
-            content.Visible = true
-            tabBtn.BackgroundColor3 = th.Accent
+            TabContent.Visible = true
+            TabButton.BackgroundColor3 = Theme.Accent
 
-            if tabObj.HasSubTabs and #tabObj.SubTabs > 0 then
-                for i, sTab in ipairs(tabObj.SubTabs) do
+            if TabObject.HasSubTabs and #TabObject.SubTabs > 0 then
+                for i, sTab in ipairs(TabObject.SubTabs) do
                     sTab.Content.Visible = (i == 1)
-                    sTab.Button.BackgroundColor3 = (i == 1) and th.Accent or th.Secondary
+                    sTab.Button.BackgroundColor3 = (i == 1) and Theme.Accent or Theme.Secondary
                 end
             end
         end)
         
-        if #winObj.Tabs == 1 then
-            tabBtn.MouseButton1Click:Connect(function() end)
-            task.spawn(tabBtn.MouseButton1Click)
+        if #WindowObject.Tabs == 1 then
+            task.spawn(function() TabButton.MouseButton1Click:Fire() end)
         end
         
-        return tabObj
+        return TabObject
     end
 
-    return winObj
+    return WindowObject
 end
 
-return Lib
+return MoonLibV2
