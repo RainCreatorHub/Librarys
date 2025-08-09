@@ -210,7 +210,7 @@ function MoonLibV2:MakeWindow(WindowInfo)
         
         table.insert(WindowObject.Tabs, TabObject)
 
-        TabButton.MouseButton1Click:Connect(function()
+        local function OnTabClick()
             for _, OtherTab in ipairs(WindowObject.Tabs) do
                 OtherTab.Content.Visible = false
                 OtherTab.Button.BackgroundColor3 = Theme.Secondary
@@ -224,12 +224,12 @@ function MoonLibV2:MakeWindow(WindowInfo)
                     sTab.Button.BackgroundColor3 = (i == 1) and Theme.Accent or Theme.Secondary
                 end
             end
-        end)
+        end
+        
+        TabButton.MouseButton1Click:Connect(OnTabClick)
         
         if #WindowObject.Tabs == 1 then
-            task.spawn(function()
-                TabButton.MouseButton1Click:Fire()
-            end)
+            task.spawn(OnTabClick)
         end
         
         return TabObject
