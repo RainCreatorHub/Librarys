@@ -52,7 +52,7 @@ function MoonLibV2:MakeWindow(WindowInfo)
         local TitleBar = Instance.new("Frame"); TitleBar.Name = "TitleBar"; TitleBar.Parent = MainWindow; TitleBar.Size = UDim2.new(1, 0, 0, 40); TitleBar.Position = UDim2.new(0, 0, 0, 0); TitleBar.BackgroundTransparency = 1
         local TitleLabel = Instance.new("TextLabel"); TitleLabel.Name = "Title"; TitleLabel.Parent = TitleBar; TitleLabel.Size = UDim2.new(1, -80, 1, 0); TitleLabel.Position = UDim2.new(0, 15, 0, 0); TitleLabel.BackgroundTransparency = 1; TitleLabel.Font = Theme.Font; TitleLabel.TextColor3 = Theme.FontColor; TitleLabel.TextSize = 20; TitleLabel.Text = WindowInfo.Name or "Window"; TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
         local SubTitleLabel = Instance.new("TextLabel"); SubTitleLabel.Name = "SubTitle"; SubTitleLabel.Parent = MainWindow; SubTitleLabel.Size = UDim2.new(1, -30, 0, 15); SubTitleLabel.Position = UDim2.new(0, 15, 0, 30); SubTitleLabel.BackgroundTransparency = 1; SubTitleLabel.Font = Enum.Font.Gotham; SubTitleLabel.TextColor3 = Theme.FontColorSecondary; SubTitleLabel.TextSize = 14; SubTitleLabel.Text = WindowInfo.SubTitle or ""; SubTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-        local SeparatorLine = Instance.new("Frame"); SeparatorLine.Name = "Separator"; SeparatorLine.Parent = MainWindow; SeparatorLine.BackgroundColor3 = Theme.Background; SeparatorLine.BorderSizePixel = 0; SeparatorLine.Size = UDim2.new(1, -30, 0, 2); SeparatorLine.Position = UDim2.new(0.5, 0, 0, 55); SeparatorLine.AnchorPoint = Vector2.new(0.5, 0)
+        local HeaderSeparatorLine = Instance.new("Frame"); HeaderSeparatorLine.Name = "HeaderSeparator"; HeaderSeparatorLine.Parent = MainWindow; HeaderSeparatorLine.BackgroundColor3 = Theme.Background; HeaderSeparatorLine.BorderSizePixel = 0; HeaderSeparatorLine.Size = UDim2.new(1, -30, 0, 2); HeaderSeparatorLine.Position = UDim2.new(0.5, 0, 0, 55); HeaderSeparatorLine.AnchorPoint = Vector2.new(0.5, 0)
         WindowObject.Frame = MainWindow; WindowObject.Theme = Theme; WindowObject.Tabs = {}
         WindowObject.TabHolder = Instance.new("Frame"); WindowObject.TabHolder.Name = "TabHolder"; WindowObject.TabHolder.Parent = MainWindow; WindowObject.TabHolder.Size = UDim2.new(1, -10, 0, 30); WindowObject.TabHolder.Position = UDim2.new(0, 5, 0, 65); WindowObject.TabHolder.BackgroundTransparency = 1
         local TabLayout = Instance.new("UIListLayout"); TabLayout.Parent = WindowObject.TabHolder; TabLayout.FillDirection = Enum.FillDirection.Horizontal; TabLayout.Padding = UDim.new(0, 5)
@@ -63,7 +63,7 @@ function MoonLibV2:MakeWindow(WindowInfo)
         MinimizeButton.MouseButton1Click:Connect(function()
             IsMinimized = not IsMinimized
             local targetSize; if IsMinimized then OriginalSizeY = MainWindow.Size.Y.Offset; targetSize = UDim2.new(MainWindow.Size.X.Scale, MainWindow.Size.X.Offset, 0, TitleBar.AbsoluteSize.Y) else targetSize = UDim2.new(MainWindow.Size.X.Scale, MainWindow.Size.X.Offset, 0, OriginalSizeY) end
-            TweenService:Create(MainWindow, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Size = targetSize}):Play(); MinimizeButton.Text = IsMinimized and "+" or "-"; SubTitleLabel.Visible = not IsMinimized; SeparatorLine.Visible = not IsMinimized; WindowObject.TabHolder.Visible = not IsMinimized
+            TweenService:Create(MainWindow, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Size = targetSize}):Play(); MinimizeButton.Text = IsMinimized and "+" or "-"; SubTitleLabel.Visible = not IsMinimized; HeaderSeparatorLine.Visible = not IsMinimized; WindowObject.TabHolder.Visible = not IsMinimized
             for _, tab in ipairs(WindowObject.Tabs) do local isVisible = not IsMinimized and tab.Button.BackgroundColor3 == Theme.Accent; local targetTransparency = isVisible and 0 or 1; TweenService:Create(tab.Content, TweenInfo.new(0.2), {GroupTransparency = targetTransparency}):Play() end
         end)
         local ResizeHandle = Instance.new("TextButton"); ResizeHandle.Name = "ResizeHandle"; ResizeHandle.Parent = MainWindow; ResizeHandle.Size = UDim2.new(0, 20, 0, 20); ResizeHandle.Position = UDim2.new(1, 0, 1, 0); ResizeHandle.AnchorPoint = Vector2.new(1, 1); ResizeHandle.BackgroundTransparency = 1; ResizeHandle.Text = ""; ResizeHandle.AutoButtonColor = false
@@ -89,23 +89,28 @@ function MoonLibV2:MakeWindow(WindowInfo)
         local TabButton = Instance.new("TextButton"); TabButton.Name = TabInfo.Name; TabButton.Parent = WindowObject.TabHolder; TabButton.Size = UDim2.new(0, 100, 1, 0); TabButton.BackgroundColor3 = Theme.Secondary; TabButton.Text = TabInfo.Name; TabButton.Font = Theme.Font; TabButton.TextColor3 = Theme.FontColor; TabButton.TextSize = 14
         local TabCorner = Instance.new("UICorner"); TabCorner.CornerRadius = Theme.CornerRadius; TabCorner.Parent = TabButton
         
-        local TabContent = Instance.new("CanvasGroup")
-        TabContent.Name = "Content"; TabContent.Parent = MainWindow; TabContent.Size = UDim2.new(1, -10, 1, -105); TabContent.Position = UDim2.new(0, 5, 0, 100); TabContent.BackgroundTransparency = 1; TabContent.GroupTransparency = 1
+        local TabContent = Instance.new("CanvasGroup"); TabContent.Name = "Content"; TabContent.Parent = MainWindow; TabContent.Size = UDim2.new(1, -10, 1, -105); TabContent.Position = UDim2.new(0, 5, 0, 100); TabContent.BackgroundTransparency = 1; TabContent.GroupTransparency = 1
         
         local SubTabHolder = Instance.new("Frame"); SubTabHolder.Name = "SubTabHolder"; SubTabHolder.Parent = TabContent; SubTabHolder.Size = UDim2.new(1, 0, 0, 25); SubTabHolder.BackgroundTransparency = 1
         local SubTabLayout = Instance.new("UIListLayout"); SubTabLayout.Parent = SubTabHolder; SubTabLayout.FillDirection = Enum.FillDirection.Horizontal; SubTabLayout.Padding = UDim.new(0, 5)
 
-        local TabObject = {}; TabObject.Button = TabButton; TabObject.Content = TabContent; TabObject.SubTabs = {}; TabObject.SubTabHolder = SubTabHolder; TabObject.HasSubTabs = false
+        local ContentSeparatorLine = Instance.new("Frame"); ContentSeparatorLine.Name = "ContentSeparator"; ContentSeparatorLine.Parent = TabContent; ContentSeparatorLine.BackgroundColor3 = Theme.Background; ContentSeparatorLine.BorderSizePixel = 0; ContentSeparatorLine.Size = UDim2.new(1, 0, 0, 2); ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 5); ContentSeparatorLine.Visible = false
+        
+        local TabObject = {}; TabObject.Button = TabButton; TabObject.Content = TabContent; TabObject.SubTabs = {}; TabObject.SubTabHolder = SubTabHolder; TabObject.HasSubTabs = false; TabObject.ContentY = 15
 
         function TabObject:MakeSubTab(SubTabInfo)
+            if not TabObject.HasSubTabs then
+                ContentSeparatorLine.Position = UDim2.new(0, 0, 0, 30)
+                TabObject.ContentY = 40
+            end
             TabObject.HasSubTabs = true
+            
             local SubTabButton = Instance.new("TextButton"); SubTabButton.Name = SubTabInfo.Name; SubTabButton.Parent = SubTabHolder; SubTabButton.Size = UDim2.new(0, 100, 1, 0); SubTabButton.BackgroundColor3 = Theme.Secondary; SubTabButton.Text = SubTabInfo.Name; SubTabButton.Font = Theme.Font; SubTabButton.TextColor3 = Theme.FontColor; SubTabButton.TextSize = 12
             local SubTabCorner = Instance.new("UICorner"); SubTabCorner.CornerRadius = Theme.CornerRadius; SubTabCorner.Parent = SubTabButton
             
-            local SubTabContent = Instance.new("CanvasGroup")
-            SubTabContent.Name = "SubContent"; SubTabContent.Parent = TabContent; SubTabContent.Size = UDim2.new(1, 0, 1, -30); SubTabContent.Position = UDim2.new(0, 0, 0, 30); SubTabContent.BackgroundTransparency = 1; SubTabContent.GroupTransparency = 1
+            local SubTabContent = Instance.new("CanvasGroup"); SubTabContent.Name = "SubContent"; SubTabContent.Parent = TabContent; SubTabContent.Size = UDim2.new(1, 0, 1, -35); SubTabContent.Position = UDim2.new(0, 0, 0, 35); SubTabContent.BackgroundTransparency = 1; SubTabContent.GroupTransparency = 1
             
-            local SubTabObject = {Button = SubTabButton, Content = SubTabContent}
+            local SubTabObject = {Button = SubTabButton, Content = SubTabContent, ContentY = 5}
             table.insert(TabObject.SubTabs, SubTabObject)
             SubTabButton.MouseButton1Click:Connect(function()
                 for _, OtherSubTab in ipairs(TabObject.SubTabs) do TweenService:Create(OtherSubTab.Content, TweenInfo.new(0.2), {GroupTransparency = 1}):Play(); OtherSubTab.Button.BackgroundColor3 = Theme.Secondary end
@@ -119,6 +124,7 @@ function MoonLibV2:MakeWindow(WindowInfo)
             if IsMinimized then return end
             for _, OtherTab in ipairs(WindowObject.Tabs) do TweenService:Create(OtherTab.Content, TweenInfo.new(0.2), {GroupTransparency = 1}):Play(); OtherTab.Button.BackgroundColor3 = Theme.Secondary end
             TweenService:Create(TabContent, TweenInfo.new(0.2), {GroupTransparency = 0}):Play(); TabButton.BackgroundColor3 = Theme.Accent
+            ContentSeparatorLine.Visible = true
             if TabObject.HasSubTabs and #TabObject.SubTabs > 0 then
                 for i, sTab in ipairs(TabObject.SubTabs) do local targetTransparency = (i == 1) and 0 or 1; TweenService:Create(sTab.Content, TweenInfo.new(0.2), {GroupTransparency = targetTransparency}):Play(); sTab.Button.BackgroundColor3 = (i == 1) and Theme.Accent or Theme.Secondary end
             else
