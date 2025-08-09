@@ -227,7 +227,9 @@ function MoonLibV2:MakeWindow(WindowInfo)
         end)
         
         if #WindowObject.Tabs == 1 then
-            task.spawn(function() TabButton.MouseButton1Click:Fire() end)
+            task.spawn(function()
+                TabButton.MouseButton1Click:Fire()
+            end)
         end
         
         return TabObject
