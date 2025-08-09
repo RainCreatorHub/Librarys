@@ -1,5 +1,3 @@
-print("Trabalhar não quer né?")
-
 local MoonLibV2 = {}
 MoonLibV2.__index = MoonLibV2
 
@@ -63,14 +61,18 @@ function MoonLibV2:MakeWindow(WindowInfo)
         local IsMinimized = false; local OriginalSizeY = MainWindow.Size.Y.Offset
         local CloseButton = Instance.new("TextButton"); CloseButton.Name = "CloseButton"; CloseButton.Parent = TitleBar; CloseButton.Size = UDim2.new(0, 20, 0, 20); CloseButton.Position = UDim2.new(1, -25, 0.5, 0); CloseButton.AnchorPoint = Vector2.new(0.5, 0.5); CloseButton.BackgroundColor3 = Theme.Primary; CloseButton.Text = "X"; CloseButton.Font = Theme.Font; CloseButton.TextColor3 = Theme.FontColor; CloseButton.TextSize = 14
         CloseButton.MouseButton1Click:Connect(function() local tween = TweenService:Create(MainWindow, TweenInfo.new(0.3), {Size = UDim2.fromOffset(0,0), Position = UDim2.fromOffset(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)}); tween:Play(); tween.Completed:Wait(); ScreenGui:Destroy() end)
+        
+        local ResizeHandle = Instance.new("TextButton"); ResizeHandle.Name = "ResizeHandle"; ResizeHandle.Parent = MainWindow; ResizeHandle.Size = UDim2.new(0, 20, 0, 20); ResizeHandle.Position = UDim2.new(1, 0, 1, 0); ResizeHandle.AnchorPoint = Vector2.new(1, 1); ResizeHandle.BackgroundTransparency = 1; ResizeHandle.Text = ""; ResizeHandle.AutoButtonColor = false
+        
         local MinimizeButton = Instance.new("TextButton"); MinimizeButton.Name = "MinimizeButton"; MinimizeButton.Parent = TitleBar; MinimizeButton.Size = UDim2.new(0, 20, 0, 20); MinimizeButton.Position = UDim2.new(1, -50, 0.5, 0); MinimizeButton.AnchorPoint = Vector2.new(0.5, 0.5); MinimizeButton.BackgroundColor3 = Theme.Primary; MinimizeButton.Text = "-"; MinimizeButton.Font = Theme.Font; MinimizeButton.TextColor3 = Theme.FontColor; MinimizeButton.TextSize = 20
         MinimizeButton.MouseButton1Click:Connect(function()
             IsMinimized = not IsMinimized
+            ResizeHandle.Visible = not IsMinimized
             local targetSize; if IsMinimized then targetSize = UDim2.new(MainWindow.Size.X.Scale, MainWindow.Size.X.Offset, 0, TitleBar.AbsoluteSize.Y) else targetSize = UDim2.new(MainWindow.Size.X.Scale, MainWindow.Size.X.Offset, 0, OriginalSizeY) end
             TweenService:Create(MainWindow, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Size = targetSize}):Play(); MinimizeButton.Text = IsMinimized and "+" or "-"; SubTitleLabel.Visible = not IsMinimized; HeaderSeparatorLine.Visible = not IsMinimized; WindowObject.TabHolder.Visible = not IsMinimized
             for _, tab in ipairs(WindowObject.Tabs) do local isVisible = not IsMinimized and tab.Button.BackgroundColor3 == Theme.Accent; local targetTransparency = isVisible and 0 or 1; TweenService:Create(tab.Content, TweenInfo.new(0.2), {GroupTransparency = targetTransparency}):Play() end
         end)
-        local ResizeHandle = Instance.new("TextButton"); ResizeHandle.Name = "ResizeHandle"; ResizeHandle.Parent = MainWindow; ResizeHandle.Size = UDim2.new(0, 20, 0, 20); ResizeHandle.Position = UDim2.new(1, 0, 1, 0); ResizeHandle.AnchorPoint = Vector2.new(1, 1); ResizeHandle.BackgroundTransparency = 1; ResizeHandle.Text = ""; ResizeHandle.AutoButtonColor = false
+        
         ResizeHandle.MouseButton1Down:Connect(function()
             MainWindow.Draggable = false; local initialMousePos = UserInputService:GetMouseLocation(); local initialSize = MainWindow.AbsoluteSize; local MouseMoveConnection; local MouseUpConnection
             MouseMoveConnection = UserInputService.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then local delta = UserInputService:GetMouseLocation() - initialMousePos; local newSize = initialSize + delta; local minSize = Vector2.new(250, 150); MainWindow.Size = UDim2.new(0, math.max(minSize.X, newSize.X), 0, math.max(minSize.Y, newSize.Y)) end end)
