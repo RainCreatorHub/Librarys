@@ -23,17 +23,15 @@ function Lib:MakeWindow(Info)
     end
 
     local sGui = Instance.new("ScreenGui")
-    sGui.Name = "MoonLibV2_GUI"
-    sGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    sGui.Parent = game:GetService("CoreGui")
+    sGui.Name = "MoonLibV2_GUI"; sGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling; sGui.Parent = game:GetService("CoreGui")
 
     if Info.LoadScreen then
         local lFrm = Instance.new("Frame")
         lFrm.Name = "LoadScreen"; lFrm.Parent = sGui; lFrm.BackgroundColor3 = th.BG; lFrm.Size = UDim2.new(1, 0, 1, 0); lFrm.ZIndex = 10
         local lTxt = Instance.new("TextLabel")
         lTxt.Name = "LoadInfo"; lTxt.Parent = lFrm; lTxt.AnchorPoint = Vector2.new(0.5, 0.5); lTxt.Position = UDim2.new(0.5, 0, 0.5, 0); lTxt.Size = UDim2.new(0, 400, 0, 50); lTxt.BackgroundTransparency = 1; lTxt.Font = th.FontName; lTxt.TextColor3 = th.Font; lTxt.TextSize = 22; lTxt.Text = Info.LoadScreenInfo or "Carregando..."
-        wait(2)
-        for i = 1, 10 do lFrm.BackgroundTransparency = i / 10; lTxt.TextTransparency = i / 10; wait(0.05) end
+        task.wait(2)
+        for i = 1, 10 do lFrm.BackgroundTransparency = i / 10; lTxt.TextTransparency = i / 10; task.wait(0.05) end
         lFrm:Destroy()
     end
 
@@ -49,7 +47,7 @@ function Lib:MakeWindow(Info)
     winObj.Frame = mFrm
     winObj.Theme = th
     winObj.Tabs = {}
-    winObj.TabHolder = Instance.new("Frame"); winObj.TabHolder.Name = "TabHolder"; winObj.TabHolder.Parent = mFrm; winObj.TabHolder.Size = UDim2.new(1, 0, 0, 30); winObj.TabHolder.Position = UDim2.new(0, 0, 0, 65); winObj.TabHolder.BackgroundTransparency = 1
+    winObj.TabHolder = Instance.new("Frame"); winObj.TabHolder.Name = "TabHolder"; winObj.TabHolder.Parent = mFrm; winObj.TabHolder.Size = UDim2.new(1, -10, 0, 30); winObj.TabHolder.Position = UDim2.new(0, 5, 0, 65); winObj.TabHolder.BackgroundTransparency = 1
     local tabLayout = Instance.new("UIListLayout"); tabLayout.Parent = winObj.TabHolder; tabLayout.FillDirection = Enum.FillDirection.Horizontal; tabLayout.Padding = UDim.new(0, 5)
 
     function winObj:MakeTab(Info)
@@ -58,17 +56,13 @@ function Lib:MakeWindow(Info)
         local tabCorner = Instance.new("UICorner"); tabCorner.CornerRadius = th.Radius; tabCorner.Parent = tabBtn
 
         local content = Instance.new("Frame")
-        content.Name = "Content"; content.Parent = mFrm; content.Size = UDim2.new(1, 0, 1, -105); content.Position = UDim2.new(0, 0, 0, 100); content.BackgroundTransparency = 1; content.Visible = false
+        content.Name = "Content"; content.Parent = mFrm; content.Size = UDim2.new(1, -10, 1, -105); content.Position = UDim2.new(0, 5, 0, 100); content.BackgroundTransparency = 1; content.Visible = false
         
         local subTabHolder = Instance.new("Frame"); subTabHolder.Name = "SubTabHolder"; subTabHolder.Parent = content; subTabHolder.Size = UDim2.new(1, 0, 0, 25); subTabHolder.BackgroundTransparency = 1
         local subTabLayout = Instance.new("UIListLayout"); subTabLayout.Parent = subTabHolder; subTabLayout.FillDirection = Enum.FillDirection.Horizontal; subTabLayout.Padding = UDim.new(0, 5)
 
         local tabObj = {}
-        tabObj.Button = tabBtn
-        tabObj.Content = content
-        tabObj.SubTabs = {}
-        tabObj.SubTabHolder = subTabHolder
-        tabObj.HasSubTabs = false
+        tabObj.Button = tabBtn; tabObj.Content = content; tabObj.SubTabs = {}; tabObj.SubTabHolder = subTabHolder; tabObj.HasSubTabs = false
 
         function tabObj:MakeSubTab(sInfo)
             tabObj.HasSubTabs = true
@@ -112,7 +106,8 @@ function Lib:MakeWindow(Info)
         end)
         
         if #winObj.Tabs == 1 then
-            tabBtn:MouseButton1Click()
+            tabBtn.MouseButton1Click:Connect(function() end)
+            task.spawn(tabBtn.MouseButton1Click)
         end
         
         return tabObj
