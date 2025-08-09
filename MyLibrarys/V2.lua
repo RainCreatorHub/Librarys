@@ -61,7 +61,7 @@ function MoonLibV2:MakeWindow(WindowInfo)
     MainWindow.Parent = ScreenGui
     MainWindow.AnchorPoint = Vector2.new(0.5, 0.5)
     MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-    MainWindow.Size = UDim2.new(0, 500, 0, 300)
+    MainWindow.Size = UDim2.new(0, 540, 0, 380)
     MainWindow.BackgroundColor3 = Theme.Primary
     MainWindow.BorderSizePixel = 0
     MainWindow.Active = true
