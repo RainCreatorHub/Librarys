@@ -1,5 +1,5 @@
-local MoonLibV2 = {}
-MoonLibV2.__index = MoonLibV2
+local Zyrex = {}
+Zyrex.__index = Zyrex
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -22,15 +22,15 @@ local function UpdateCanvasSize(scrollingFrame, layout)
     scrollingFrame.CanvasSize = UDim2.fromOffset(layout.AbsoluteContentSize.X, 0)
 end
 
-function MoonLibV2:MakeWindow(WindowInfo)
+function Zyrex:MakeWindow(WindowInfo)
     local Theme = Themes[WindowInfo.Theme] or Themes.Dark
 
-    if game:GetService("CoreGui"):FindFirstChild("MoonLibV2_GUI") then
-        game:GetService("CoreGui"):FindFirstChild("MoonLibV2_GUI"):Destroy()
+    if game:GetService("CoreGui"):FindFirstChild("Zyrex_GUI") then
+        game:GetService("CoreGui"):FindFirstChild("Zyrex_GUI"):Destroy()
     end
 
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "MoonLibV2_GUI"
+    ScreenGui.Name = "Zyrex_GUI"
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ScreenGui.Parent = game:GetService("CoreGui")
 
@@ -153,4 +153,4 @@ function MoonLibV2:MakeWindow(WindowInfo)
     return WindowObject
 end
 
-return MoonLibV2
+return Zyrex
