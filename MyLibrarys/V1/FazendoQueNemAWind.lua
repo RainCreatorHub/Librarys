@@ -1,10 +1,4 @@
---[[
-    Zyrex UI Library
-    Descrição: Uma biblioteca de UI moderna, minimalista e completa para o Roblox.
-    Autor: [Seu Nome/User]
-    GitHub: [Link para seu repositório]
-    Versão: 2.0 (Correção de Layout e Estilo)
-]]
+
 
 -- // Serviços
 local TweenService = game:GetService("TweenService")
