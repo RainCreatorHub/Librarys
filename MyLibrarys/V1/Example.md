@@ -2,7 +2,10 @@
 
 ## Load { Executor }
 ``` lua
-local Zyrex = loadstring(game:HttpGet("https://raw.githubusercontent.com/RainCreatorHub/Librarys/refs/heads/main/MyLibrarys/V1/Source.lua"))()
+
+local Repo = "https://github.com/RainCreatorHub/Librarys/tree/main/MyLibrarys/V1/"
+
+local Zyrex = loadstring(game:HttpGet(Repo .. "Source.lua"))()
 ```
 
 ## Load { Roblox studio }
