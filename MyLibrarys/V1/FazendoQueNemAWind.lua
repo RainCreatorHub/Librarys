@@ -1,1 +1,289 @@
-local a={cache={},load=function(b)if not a.cache[b]then a.cache[b]={c=a[b]()}end return a.cache[b].c end};do function a.a()local b,c,d=game:GetService("TweenService"),game:GetService("UserInputService"),game:GetService("Players");local e={};local f={};f.__index=f;local g={Colors={Background=Color3.fromRGB(28,28,28),ContentBG=Color3.fromRGB(28,28,28),TabInactive=Color3.fromRGB(45,45,45),TabActive=Color3.fromRGB(60,60,60),TextPrimary=Color3.fromRGB(255,255,255),TextSecondary=Color3.fromRGB(180,180,180),TextPlaceholder=Color3.fromRGB(120,120,120)},Fonts={Title=Enum.Font.GothamSemibold,Subtitle=Enum.Font.Gotham,Tab=Enum.Font.Gotham,Body=Enum.Font.Gotham},Icons={["window"]="rbxassetid://6269654939",["tab"]="rbxassetid://2849278925",["empty-face"]="rbxassetid://5984510721",["minimize"]="rbxassetid://6031829090",["maximize"]="rbxassetid://6031825883",["close"]="rbxassetid://6031824231"}};function e:CreateWindow(h)local i=setmetatable({},f);i.Tabs={};i.ActiveTab=nil;i.Options=h;i._dragging=false;i.ScreenGui=Instance.new("ScreenGui",d.LocalPlayer:WaitForChild("PlayerGui"));i.ScreenGui.Name=h.Folder or"ZyrexHub";i.ScreenGui.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;i.ScreenGui.ResetOnSpawn=false;i.MainFrame=Instance.new("Frame",i.ScreenGui);i.MainFrame.Name="MainFrame";i.MainFrame.Size=h.Size or UDim2.fromOffset(580,380);i.MainFrame.Position=UDim2.new(0.5,-i.MainFrame.AbsoluteSize.X/2,0.5,-i.MainFrame.AbsoluteSize.Y/2);i.MainFrame.BackgroundColor3=g.Colors.Background;i.MainFrame.BorderSizePixel=0;Instance.new("UICorner",i.MainFrame).CornerRadius=UDim.new(0,8);local j=Instance.new("Frame",i.MainFrame);j.Name="TitleBar";j.Size=UDim2.new(1,0,0,55);j.BackgroundTransparency=1;local k=Instance.new("ImageLabel",j);k.Image=g.Icons[h.Icon]or g.Icons["window"];k.Size=UDim2.new(0,20,0,20);k.Position=UDim2.new(0,18,0.5,-18);k.BackgroundTransparency=1;k.ImageColor3=g.Colors.TextSecondary;local l=Instance.new("TextLabel",j);l.Text=h.Title or"Zyrex UI";l.Font=g.Fonts.Title;l.TextColor3=g.Colors.TextPrimary;l.TextSize=16;l.TextXAlignment=Enum.TextXAlignment.Left;l.Position=UDim2.new(0,50,0,8);l.Size=UDim2.new(0,300,0,20);l.BackgroundTransparency=1;local m=Instance.new("TextLabel",j);m.Text=h.Author or"by Zyrex";m.Font=g.Fonts.Subtitle;m.TextColor3=g.Colors.TextSecondary;m.TextSize=13;m.TextXAlignment=Enum.TextXAlignment.Left;m.Position=UDim2.new(0,50,0,28);m.Size=UDim2.new(0,300,0,15);m.BackgroundTransparency=1;local n=Instance.new("Frame",j);n.Size=UDim2.new(0,100,0,20);n.Position=UDim2.new(1,-110,0,10);n.BackgroundTransparency=1;local o=Instance.new("UIListLayout",n);o.FillDirection=Enum.FillDirection.Horizontal;o.HorizontalAlignment=Enum.HorizontalAlignment.Right;o.Padding=UDim.new(0,8);local p=Instance.new("ImageButton",n);p.Image=g.Icons.close;p.Size=UDim2.new(0,16,0,16);p.BackgroundTransparency=1;p.ImageColor3=g.Colors.TextSecondary;p.MouseButton1Click:Connect(function()i.ScreenGui:Destroy()end);local q=Instance.new("ImageButton",n);q.Image=g.Icons.maximize;q.Size=UDim2.new(0,16,0,16);q.BackgroundTransparency=1;q.ImageColor3=g.Colors.TextSecondary;local r=Instance.new("ImageButton",n);r.Image=g.Icons.minimize;r.Size=UDim2.new(0,16,0,16);r.BackgroundTransparency=1;r.ImageColor3=g.Colors.TextSecondary;local s=Instance.new("Frame",i.MainFrame);s.Size=UDim2.new(1,0,1,-55);s.Position=UDim2.new(0,0,0,55);s.BackgroundTransparency=1;Instance.new("UIPadding",s).PaddingLeft=UDim.new(0,15);Instance.new("UIPadding",s).PaddingRight=UDim.new(0,15);Instance.new("UIPadding",s).PaddingBottom=UDim.new(0,15);local t=h.SideBarWidth or 180;i.TabsContainer=Instance.new("Frame",s);i.TabsContainer.Size=UDim2.new(0,t,1,0);i.TabsContainer.BackgroundTransparency=1;local u=Instance.new("UIListLayout",i.TabsContainer);u.Padding=UDim.new(0,10);u.SortOrder=Enum.SortOrder.LayoutOrder;i.ContentFrame=Instance.new("Frame",s);i.ContentFrame.Size=UDim2.new(1,-t-15,1,0);i.ContentFrame.Position=UDim2.new(0,t+15,0,0);i.ContentFrame.BackgroundTransparency=1;i.ContentFrame.ClipsDescendants=true;i:_makeDraggable(j);return i end;function f:_makeDraggable(h)local i,j;h.InputBegan:Connect(function(k)if k.UserInputType==Enum.UserInputType.MouseButton1 or k.UserInputType==Enum.UserInputType.Touch then self._dragging=true;i=k;j=self.MainFrame.Position end end);h.InputEnded:Connect(function(k)if k==i then self._dragging=false end end);c.InputChanged:Connect(function(k)if self._dragging and(k.UserInputType==Enum.UserInputType.MouseMovement or k.UserInputType==Enum.UserInputType.Touch)then local l=k.Position-i.Position;self.MainFrame.Position=UDim2.new(j.X.Scale,j.X.Offset+l.X,j.Y.Scale,j.Y.Offset+l.Y)end end)end;function f:_updateEmptyMessage(h)local i=false;for _,j in ipairs(h.Content:GetChildren())do if j:IsA("TextButton")or j:IsA("Frame")and j.Name~="EmptyMessage"then i=true;break end end;h.EmptyMessage.Visible=not i end;function f:SwitchTab(h)if not self.Tabs[h]or self.ActiveTab==h then return end;if self.ActiveTab and self.Tabs[self.ActiveTab]then local i=self.Tabs[self.ActiveTab];i.Content.Visible=false;b:Create(i.Button,TweenInfo.new(0.2),{BackgroundColor3=g.Colors.TabInactive}):Play()end;local j=self.Tabs[h];j.Content.Visible=true;j.Button.BackgroundColor3=g.Colors.TabActive;self.ActiveTab=h end;function f:AddTab(h,i)local j={};local k=Instance.new("TextButton",self.TabsContainer);k.Name=h;k.Size=UDim2.new(1,0,0,42);k.BackgroundColor3=g.Colors.TabInactive;k.Text="";Instance.new("UICorner",k).CornerRadius=UDim.new(0,6);local l=Instance.new("ImageLabel",k);l.Image=g.Icons[i]or g.Icons["tab"];l.Size=UDim2.new(0,20,0,20);l.Position=UDim2.new(0,15,0.5,-10);l.BackgroundTransparency=1;l.ImageColor3=g.Colors.TextSecondary;local m=Instance.new("TextLabel",k);m.Text=h;m.Font=g.Fonts.Tab;m.TextColor3=g.Colors.TextPrimary;m.TextSize=15;m.TextXAlignment=Enum.TextXAlignment.Left;m.Position=UDim2.new(0,45,0,0);m.Size=UDim2.new(1,-55,1,0);m.BackgroundTransparency=1;local n=Instance.new("ScrollingFrame",self.ContentFrame);n.Name=h.."Content";n.Size=UDim2.fromScale(1,1);n.BackgroundColor3=g.Colors.Background;n.BorderSizePixel=0;n.ScrollBarThickness=0;n.Visible=false;Instance.new("UICorner",n).CornerRadius=UDim.new(0,6);local o=Instance.new("UIListLayout",n);o.Padding=UDim.new(0,10);o.SortOrder=Enum.SortOrder.LayoutOrder;Instance.new("UIPadding",n).Padding=UDim.new(0,15);local p=Instance.new("Frame",n);p.Name="EmptyMessage";p.Size=UDim2.fromScale(1,1);p.BackgroundTransparency=1;local q=Instance.new("ImageLabel",p);q.Image=g.Icons["empty-face"];q.Size=UDim2.fromOffset(48,48);q.Position=UDim2.new(0.5,-24,0.5,-40);q.BackgroundTransparency=1;q.ImageColor3=Color3.fromRGB(60,60,60);local r=Instance.new("TextLabel",p);r.Text="This tab is empty";r.Font=g.Fonts.Body;r.TextColor3=g.Colors.TextPlaceholder;r.TextSize=14;r.Position=UDim2.new(0.5,-100,0.5,15);r.Size=UDim2.fromOffset(200,20);r.BackgroundTransparency=1;j.Button=k;j.Content=n;j.EmptyMessage=p;self.Tabs[h]=j;k.MouseButton1Click:Connect(function()self:SwitchTab(h)end);if not self.ActiveTab then self:SwitchTab(h)end;self:_updateEmptyMessage(j);return j end;function f:AddButton(h,i,j)if not h or not h.Content then return end;local k=Instance.new("TextButton",h.Content);k.Name=i;k.Size=UDim2.new(1,0,0,38);k.BackgroundColor3=g.Colors.TabInactive;k.Text=i;k.TextColor3=g.Colors.TextPrimary;k.Font=g.Fonts.Body;k.TextSize=14;Instance.new("UICorner",k).CornerRadius=UDim.new(0,6);k.MouseButton1Click:Connect(function()pcall(j)end);self:_updateEmptyMessage(h)end;return e end;return a.a()
+-- // Serviços e Módulos
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+
+-- // Módulo Principal e Objetos
+local Zyrex = {}
+local WindowObject = {}
+WindowObject.__index = WindowObject
+
+-- // Configurações de Aparência (Cores, Fontes, Ícones)
+local DEFAULTS = {
+    Colors = {
+        Background = Color3.fromRGB(28, 28, 28),      -- #1C1C1C
+        ContentBG = Color3.fromRGB(28, 28, 28),      -- Fundo da área de conteúdo
+        TabInactive = Color3.fromRGB(45, 45, 45),    -- #2D2D2D
+        TabActive = Color3.fromRGB(60, 60, 60),      -- #3C3C3C
+        TextPrimary = Color3.fromRGB(255, 255, 255),
+        TextSecondary = Color3.fromRGB(180, 180, 180),
+        TextPlaceholder = Color3.fromRGB(120, 120, 120)
+    },
+    Fonts = {
+        Title = Enum.Font.GothamSemibold,
+        Subtitle = Enum.Font.Gotham,
+        Tab = Enum.Font.Gotham,
+        Body = Enum.Font.Gotham
+    },
+    Icons = {
+        -- Mapeamento de nomes para IDs de assets (Feather Icons)
+        ["window"] = "rbxassetid://6269654939",
+        ["tab"] = "rbxassetid://2849278925",
+        ["empty-face"] = "rbxassetid://5984510721",
+        ["minimize"] = "rbxassetid://6031829090",
+        ["maximize"] = "rbxassetid://6031825883",
+        ["close"] = "rbxassetid://6031824231"
+    }
+}
+
+-- // Função Principal: CreateWindow
+function Zyrex:CreateWindow(options)
+    local self = setmetatable({}, WindowObject)
+    self.Tabs = {}
+    self.ActiveTab = nil
+    self.Options = options
+    self._dragging = false
+
+    -- 1. GUI Principal
+    self.ScreenGui = Instance.new("ScreenGui", Players.LocalPlayer:WaitForChild("PlayerGui"))
+    self.ScreenGui.Name = options.Folder or "ZyrexHub"
+    self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    self.ScreenGui.ResetOnSpawn = false
+
+    -- 2. Janela Principal
+    self.MainFrame = Instance.new("Frame", self.ScreenGui)
+    self.MainFrame.Name = "MainFrame"
+    self.MainFrame.Size = options.Size or UDim2.fromOffset(580, 380)
+    self.MainFrame.Position = UDim2.new(0.5, -self.MainFrame.AbsoluteSize.X / 2, 0.5, -self.MainFrame.AbsoluteSize.Y / 2)
+    self.MainFrame.BackgroundColor3 = DEFAULTS.Colors.Background
+    self.MainFrame.BorderSizePixel = 0
+    Instance.new("UICorner", self.MainFrame).CornerRadius = UDim.new(0, 8)
+
+    -- 3. Barra de Título
+    local titleBar = Instance.new("Frame", self.MainFrame)
+    titleBar.Name = "TitleBar"
+    titleBar.Size = UDim2.new(1, 0, 0, 55)
+    titleBar.BackgroundTransparency = 1
+
+    local windowIcon = Instance.new("ImageLabel", titleBar)
+    windowIcon.Image = DEFAULTS.Icons[options.Icon] or DEFAULTS.Icons["window"]
+    windowIcon.Size = UDim2.new(0, 20, 0, 20)
+    windowIcon.Position = UDim2.new(0, 18, 0.5, -18)
+    windowIcon.BackgroundTransparency = 1
+    windowIcon.ImageColor3 = DEFAULTS.Colors.TextSecondary
+
+    local titleLabel = Instance.new("TextLabel", titleBar)
+    titleLabel.Text = options.Title or "Zyrex UI"
+    titleLabel.Font = DEFAULTS.Fonts.Title
+    titleLabel.TextColor3 = DEFAULTS.Colors.TextPrimary
+    titleLabel.TextSize = 16
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Position = UDim2.new(0, 50, 0, 8)
+    titleLabel.Size = UDim2.new(0, 300, 0, 20)
+    titleLabel.BackgroundTransparency = 1
+
+    local subtitleLabel = Instance.new("TextLabel", titleBar)
+    subtitleLabel.Text = options.Author or "by Zyrex"
+    subtitleLabel.Font = DEFAULTS.Fonts.Subtitle
+    subtitleLabel.TextColor3 = DEFAULTS.Colors.TextSecondary
+    subtitleLabel.TextSize = 13
+    subtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    subtitleLabel.Position = UDim2.new(0, 50, 0, 28)
+    subtitleLabel.Size = UDim2.new(0, 300, 0, 15)
+    subtitleLabel.BackgroundTransparency = 1
+    
+    -- Botões de Ação da Janela
+    local actionButtons = Instance.new("Frame", titleBar)
+    actionButtons.Size = UDim2.new(0, 100, 0, 20)
+    actionButtons.Position = UDim2.new(1, -110, 0, 10)
+    actionButtons.BackgroundTransparency = 1
+    local actionsLayout = Instance.new("UIListLayout", actionButtons)
+    actionsLayout.FillDirection = Enum.FillDirection.Horizontal
+    actionsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    actionsLayout.Padding = UDim.new(0, 8)
+
+    local closeBtn = Instance.new("ImageButton", actionButtons)
+    closeBtn.Image = DEFAULTS.Icons.close
+    closeBtn.Size = UDim2.new(0, 16, 0, 16)
+    closeBtn.BackgroundTransparency = 1
+    closeBtn.ImageColor3 = DEFAULTS.Colors.TextSecondary
+    closeBtn.MouseButton1Click:Connect(function() self.ScreenGui:Destroy() end)
+
+    local maxBtn = Instance.new("ImageButton", actionButtons)
+    maxBtn.Image = DEFAULTS.Icons.maximize
+    maxBtn.Size = UDim2.new(0, 16, 0, 16)
+    maxBtn.BackgroundTransparency = 1
+    maxBtn.ImageColor3 = DEFAULTS.Colors.TextSecondary
+
+    local minBtn = Instance.new("ImageButton", actionButtons)
+    minBtn.Image = DEFAULTS.Icons.minimize
+    minBtn.Size = UDim2.new(0, 16, 0, 16)
+    minBtn.BackgroundTransparency = 1
+    minBtn.ImageColor3 = DEFAULTS.Colors.TextSecondary
+
+    -- 4. Container Principal
+    local mainContainer = Instance.new("Frame", self.MainFrame)
+    mainContainer.Size = UDim2.new(1, 0, 1, -55)
+    mainContainer.Position = UDim2.new(0, 0, 0, 55)
+    mainContainer.BackgroundTransparency = 1
+    Instance.new("UIPadding", mainContainer).PaddingLeft = UDim.new(0, 15)
+    Instance.new("UIPadding", mainContainer).PaddingRight = UDim.new(0, 15)
+    Instance.new("UIPadding", mainContainer).PaddingBottom = UDim.new(0, 15)
+
+    -- 5. Painel de Abas (Esquerda)
+    local sideBarWidth = options.SideBarWidth or 180
+    self.TabsContainer = Instance.new("Frame", mainContainer)
+    self.TabsContainer.Size = UDim2.new(0, sideBarWidth, 1, 0)
+    self.TabsContainer.BackgroundTransparency = 1
+    local tabsLayout = Instance.new("UIListLayout", self.TabsContainer)
+    tabsLayout.Padding = UDim.new(0, 10)
+    tabsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+    -- 6. Painel de Conteúdo (Direita)
+    self.ContentFrame = Instance.new("Frame", mainContainer)
+    self.ContentFrame.Size = UDim2.new(1, -sideBarWidth - 15, 1, 0)
+    self.ContentFrame.Position = UDim2.new(0, sideBarWidth + 15, 0, 0)
+    self.ContentFrame.BackgroundTransparency = 1
+    self.ContentFrame.ClipsDescendants = true
+
+    -- 7. Lógica de Arrastar
+    self:_makeDraggable(titleBar)
+
+    return self
+end
+
+-- // Funções do Objeto da Janela
+
+function WindowObject:_makeDraggable(frame)
+    local dragInput, framePosition
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            self._dragging = true; dragInput = input; framePosition = self.MainFrame.Position
+        end
+    end)
+    frame.InputEnded:Connect(function(input) if input == dragInput then self._dragging = false end end)
+    UserInputService.InputChanged:Connect(function(input)
+        if self._dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragInput.Position
+            self.MainFrame.Position = UDim2.new(framePosition.X.Scale, framePosition.X.Offset + delta.X, framePosition.Y.Scale, framePosition.Y.Offset + delta.Y)
+        end
+    end)
+end
+
+function WindowObject:_updateEmptyMessage(tab)
+    local hasElements = false
+    for _, child in ipairs(tab.Content:GetChildren()) do
+        if child:IsA("TextButton") or child:IsA("Frame") and child.Name ~= "EmptyMessage" then
+            hasElements = true
+            break
+        end
+    end
+    tab.EmptyMessage.Visible = not hasElements
+end
+
+function WindowObject:SwitchTab(title)
+    if not self.Tabs[title] or self.ActiveTab == title then return end
+
+    if self.ActiveTab and self.Tabs[self.ActiveTab] then
+        local oldTab = self.Tabs[self.ActiveTab]
+        oldTab.Content.Visible = false
+        TweenService:Create(oldTab.Button, TweenInfo.new(0.2), { BackgroundColor3 = DEFAULTS.Colors.TabInactive }):Play()
+    end
+
+    local newTab = self.Tabs[title]
+    newTab.Content.Visible = true
+    newTab.Button.BackgroundColor3 = DEFAULTS.Colors.TabActive
+    self.ActiveTab = title
+end
+
+function WindowObject:AddTab(title, icon)
+    local tabData = {}
+
+    local tabButton = Instance.new("TextButton", self.TabsContainer)
+    tabButton.Name = title
+    tabButton.Size = UDim2.new(1, 0, 0, 42)
+    tabButton.BackgroundColor3 = DEFAULTS.Colors.TabInactive
+    tabButton.Text = ""
+    Instance.new("UICorner", tabButton).CornerRadius = UDim.new(0, 6)
+
+    local tabIcon = Instance.new("ImageLabel", tabButton)
+    tabIcon.Image = DEFAULTS.Icons[icon] or DEFAULTS.Icons["tab"]
+    tabIcon.Size = UDim2.new(0, 20, 0, 20)
+    tabIcon.Position = UDim2.new(0, 15, 0.5, -10)
+    tabIcon.BackgroundTransparency = 1
+    tabIcon.ImageColor3 = DEFAULTS.Colors.TextSecondary
+
+    local tabLabel = Instance.new("TextLabel", tabButton)
+    tabLabel.Text = title
+    tabLabel.Font = DEFAULTS.Fonts.Tab
+    tabLabel.TextColor3 = DEFAULTS.Colors.TextPrimary
+    tabLabel.TextSize = 15
+    tabLabel.TextXAlignment = Enum.TextXAlignment.Left
+    tabLabel.Position = UDim2.new(0, 45, 0, 0)
+    tabLabel.Size = UDim2.new(1, -55, 1, 0)
+    tabLabel.BackgroundTransparency = 1
+
+    local content = Instance.new("ScrollingFrame", self.ContentFrame)
+    content.Name = title .. "Content"
+    content.Size = UDim2.fromScale(1, 1)
+    content.BackgroundColor3 = DEFAULTS.Colors.Background
+    content.BorderSizePixel = 0
+    content.ScrollBarThickness = 0
+    content.Visible = false
+    Instance.new("UICorner", content).CornerRadius = UDim.new(0, 6)
+    local contentLayout = Instance.new("UIListLayout", content)
+    contentLayout.Padding = UDim.new(0, 10)
+    contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    Instance.new("UIPadding", content).Padding = UDim.new(0, 15)
+
+    local emptyMessage = Instance.new("Frame", content)
+    emptyMessage.Name = "EmptyMessage"
+    emptyMessage.Size = UDim2.fromScale(1, 1)
+    emptyMessage.BackgroundTransparency = 1
+    local emptyIcon = Instance.new("ImageLabel", emptyMessage)
+    emptyIcon.Image = DEFAULTS.Icons["empty-face"]
+    emptyIcon.Size = UDim2.fromOffset(48, 48)
+    emptyIcon.Position = UDim2.new(0.5, -24, 0.5, -40)
+    emptyIcon.BackgroundTransparency = 1
+    emptyIcon.ImageColor3 = Color3.fromRGB(60, 60, 60)
+    local emptyText = Instance.new("TextLabel", emptyMessage)
+    emptyText.Text = "This tab is empty"
+    emptyText.Font = DEFAULTS.Fonts.Body
+    emptyText.TextColor3 = DEFAULTS.Colors.TextPlaceholder
+    emptyText.TextSize = 14
+    emptyText.Position = UDim2.new(0.5, -100, 0.5, 15)
+    emptyText.Size = UDim2.fromOffset(200, 20)
+    emptyText.BackgroundTransparency = 1
+
+    tabData.Button = tabButton
+    tabData.Content = content
+    tabData.EmptyMessage = emptyMessage
+    self.Tabs[title] = tabData
+
+    tabButton.MouseButton1Click:Connect(function() self:SwitchTab(title) end)
+
+    if not self.ActiveTab then self:SwitchTab(title) end
+    self:_updateEmptyMessage(tabData)
+
+    return tabData
+end
+
+-- // Funções para adicionar elementos
+function WindowObject:AddButton(tab, text, callback)
+    if not tab or not tab.Content then return end
+    
+    local button = Instance.new("TextButton", tab.Content)
+    button.Name = text
+    button.Size = UDim2.new(1, 0, 0, 38)
+    button.BackgroundColor3 = DEFAULTS.Colors.TabInactive
+    button.Text = text
+    button.TextColor3 = DEFAULTS.Colors.TextPrimary
+    button.Font = DEFAULTS.Fonts.Body
+    button.TextSize = 14
+    Instance.new("UICorner", button).CornerRadius = UDim.new(0, 6)
+
+    button.MouseButton1Click:Connect(function() pcall(callback) end)
+    self:_updateEmptyMessage(tab)
+end
+
+return Zyrex
