@@ -1,38 +1,45 @@
 
 
--- // Serviços
+-- // Serviços e Módulos
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 
--- // Módulo Principal e Objeto da Janela
-local Zyrex = {}
-local WindowObject = { _elements = {} }
+-- // Módulo Principal e Objetos
+local Nexus = {}
+local WindowObject = {}
 WindowObject.__index = WindowObject
 
 -- // Configurações de Aparência (Cores, Fontes, Ícones)
 local DEFAULTS = {
     Colors = {
-        Background = Color3.fromRGB(25, 25, 25),      -- #191919
-        ContentBG = Color3.fromRGB(35, 35, 35),      -- Fundo da área de conteúdo
-        ElementBG = Color3.fromRGB(43, 43, 43),      -- Fundo de botões/abas
-        ElementHover = Color3.fromRGB(60, 60, 60),   -- Cor de hover
+        Background = Color3.fromRGB(28, 28, 28),      -- #1C1C1C
+        ContentBG = Color3.fromRGB(28, 28, 28),      -- Fundo da área de conteúdo
+        TabInactive = Color3.fromRGB(45, 45, 45),    -- #2D2D2D
+        TabActive = Color3.fromRGB(60, 60, 60),      -- #3C3C3C
         TextPrimary = Color3.fromRGB(255, 255, 255),
-        TextSecondary = Color3.fromRGB(169, 169, 169)
+        TextSecondary = Color3.fromRGB(180, 180, 180),
+        TextPlaceholder = Color3.fromRGB(120, 120, 120)
     },
     Fonts = {
         Title = Enum.Font.GothamSemibold,
         Subtitle = Enum.Font.Gotham,
+        Tab = Enum.Font.Gotham,
         Body = Enum.Font.Gotham
     },
     Icons = {
-        ["default-icon"] = "rbxassetid://2151722383", -- Ícone de usuário placeholder
-        ["empty-face"] = "rbxassetid://5984510721"
+        -- Mapeamento de nomes para IDs de assets (Feather Icons)
+        ["window"] = "rbxassetid://6269654939",
+        ["tab"] = "rbxassetid://2849278925",
+        ["empty-face"] = "rbxassetid://5984510721",
+        ["minimize"] = "rbxassetid://6031829090",
+        ["maximize"] = "rbxassetid://6031825883",
+        ["close"] = "rbxassetid://6031824231"
     }
 }
 
 -- // Função Principal: CreateWindow
-function Zyrex:CreateWindow(options)
+function Nexus:CreateWindow(options)
     local self = setmetatable({}, WindowObject)
     self.Tabs = {}
     self.ActiveTab = nil
@@ -41,14 +48,14 @@ function Zyrex:CreateWindow(options)
 
     -- 1. GUI Principal
     self.ScreenGui = Instance.new("ScreenGui", Players.LocalPlayer:WaitForChild("PlayerGui"))
-    self.ScreenGui.Name = options.Folder or "ZyrexHub"
+    self.ScreenGui.Name = options.Folder or "NexusHub"
     self.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     self.ScreenGui.ResetOnSpawn = false
 
     -- 2. Janela Principal
     self.MainFrame = Instance.new("Frame", self.ScreenGui)
     self.MainFrame.Name = "MainFrame"
-    self.MainFrame.Size = options.Size or UDim2.fromOffset(560, 340)
+    self.MainFrame.Size = options.Size or UDim2.fromOffset(580, 380)
     self.MainFrame.Position = UDim2.new(0.5, -self.MainFrame.AbsoluteSize.X / 2, 0.5, -self.MainFrame.AbsoluteSize.Y / 2)
     self.MainFrame.BackgroundColor3 = DEFAULTS.Colors.Background
     self.MainFrame.BorderSizePixel = 0
@@ -57,49 +64,76 @@ function Zyrex:CreateWindow(options)
     -- 3. Barra de Título
     local titleBar = Instance.new("Frame", self.MainFrame)
     titleBar.Name = "TitleBar"
-    titleBar.Size = UDim2.new(1, 0, 0, 50)
+    titleBar.Size = UDim2.new(1, 0, 0, 55)
     titleBar.BackgroundTransparency = 1
 
-    -- Ícone Circular da Janela
-    local iconContainer = Instance.new("Frame", titleBar)
-    iconContainer.Size = UDim2.fromOffset(28, 28)
-    iconContainer.Position = UDim2.new(0, 15, 0.5, -14)
-    iconContainer.BackgroundTransparency = 1
-    local iconImage = Instance.new("ImageLabel", iconContainer)
-    iconImage.Size = UDim2.fromScale(1, 1)
-    iconImage.Image = options.Icon or DEFAULTS.Icons["default-icon"]
-    iconImage.BackgroundTransparency = 1
-    local iconCorner = Instance.new("UICorner", iconContainer)
-    iconCorner.CornerRadius = UDim.new(1, 0)
+    local windowIcon = Instance.new("ImageLabel", titleBar)
+    windowIcon.Image = DEFAULTS.Icons[options.Icon] or DEFAULTS.Icons["window"]
+    windowIcon.Size = UDim2.new(0, 20, 0, 20)
+    windowIcon.Position = UDim2.new(0, 18, 0.5, -18)
+    windowIcon.BackgroundTransparency = 1
+    windowIcon.ImageColor3 = DEFAULTS.Colors.TextSecondary
 
     local titleLabel = Instance.new("TextLabel", titleBar)
-    titleLabel.Text = options.Title or "Zyrex UI"
+    titleLabel.Text = options.Title or "Nexus UI"
     titleLabel.Font = DEFAULTS.Fonts.Title
     titleLabel.TextColor3 = DEFAULTS.Colors.TextPrimary
-    titleLabel.TextSize = 15
+    titleLabel.TextSize = 16
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Position = UDim2.new(0, 55, 0, 6)
+    titleLabel.Position = UDim2.new(0, 50, 0, 8)
     titleLabel.Size = UDim2.new(0, 300, 0, 20)
     titleLabel.BackgroundTransparency = 1
 
     local subtitleLabel = Instance.new("TextLabel", titleBar)
-    subtitleLabel.Text = options.Author or "by Zyrex"
+    subtitleLabel.Text = options.Author or "by Nexus"
     subtitleLabel.Font = DEFAULTS.Fonts.Subtitle
     subtitleLabel.TextColor3 = DEFAULTS.Colors.TextSecondary
-    subtitleLabel.TextSize = 12
+    subtitleLabel.TextSize = 13
     subtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    subtitleLabel.Position = UDim2.new(0, 55, 0, 25)
+    subtitleLabel.Position = UDim2.new(0, 50, 0, 28)
     subtitleLabel.Size = UDim2.new(0, 300, 0, 15)
     subtitleLabel.BackgroundTransparency = 1
+    
+    -- Botões de Ação da Janela
+    local actionButtons = Instance.new("Frame", titleBar)
+    actionButtons.Size = UDim2.new(0, 100, 0, 20)
+    actionButtons.Position = UDim2.new(1, -110, 0, 10)
+    actionButtons.BackgroundTransparency = 1
+    local actionsLayout = Instance.new("UIListLayout", actionButtons)
+    actionsLayout.FillDirection = Enum.FillDirection.Horizontal
+    actionsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    actionsLayout.Padding = UDim.new(0, 8)
 
-    -- 4. Container Principal (para Abas e Conteúdo)
+    local closeBtn = Instance.new("ImageButton", actionButtons)
+    closeBtn.Image = DEFAULTS.Icons.Close
+    closeBtn.Size = UDim2.new(0, 16, 0, 16)
+    closeBtn.BackgroundTransparency = 1
+    closeBtn.ImageColor3 = DEFAULTS.Colors.TextSecondary
+    closeBtn.MouseButton1Click:Connect(function() self.ScreenGui:Destroy() end)
+
+    local maxBtn = Instance.new("ImageButton", actionButtons)
+    maxBtn.Image = DEFAULTS.Icons.Maximize
+    maxBtn.Size = UDim2.new(0, 16, 0, 16)
+    maxBtn.BackgroundTransparency = 1
+    maxBtn.ImageColor3 = DEFAULTS.Colors.TextSecondary
+
+    local minBtn = Instance.new("ImageButton", actionButtons)
+    minBtn.Image = DEFAULTS.Icons.Minimize
+    minBtn.Size = UDim2.new(0, 16, 0, 16)
+    minBtn.BackgroundTransparency = 1
+    minBtn.ImageColor3 = DEFAULTS.Colors.TextSecondary
+
+    -- 4. Container Principal
     local mainContainer = Instance.new("Frame", self.MainFrame)
-    mainContainer.Size = UDim2.new(1, -20, 1, -60)
-    mainContainer.Position = UDim2.new(0.5, -mainContainer.AbsoluteSize.X / 2, 0.5, 25)
+    mainContainer.Size = UDim2.new(1, 0, 1, -55)
+    mainContainer.Position = UDim2.new(0, 0, 0, 55)
     mainContainer.BackgroundTransparency = 1
+    Instance.new("UIPadding", mainContainer).PaddingLeft = UDim.new(0, 15)
+    Instance.new("UIPadding", mainContainer).PaddingRight = UDim.new(0, 15)
+    Instance.new("UIPadding", mainContainer).PaddingBottom = UDim.new(0, 15)
 
     -- 5. Painel de Abas (Esquerda)
-    local sideBarWidth = 140
+    local sideBarWidth = options.SideBarWidth or 180
     self.TabsContainer = Instance.new("Frame", mainContainer)
     self.TabsContainer.Size = UDim2.new(0, sideBarWidth, 1, 0)
     self.TabsContainer.BackgroundTransparency = 1
@@ -109,11 +143,10 @@ function Zyrex:CreateWindow(options)
 
     -- 6. Painel de Conteúdo (Direita)
     self.ContentFrame = Instance.new("Frame", mainContainer)
-    self.ContentFrame.Size = UDim2.new(1, -sideBarWidth - 10, 1, 0)
-    self.ContentFrame.Position = UDim2.new(0, sideBarWidth + 10, 0, 0)
-    self.ContentFrame.BackgroundColor3 = DEFAULTS.Colors.ContentBG
-    self.ContentFrame.BorderSizePixel = 0
-    Instance.new("UICorner", self.ContentFrame).CornerRadius = UDim.new(0, 6)
+    self.ContentFrame.Size = UDim2.new(1, -sideBarWidth - 15, 1, 0)
+    self.ContentFrame.Position = UDim2.new(0, sideBarWidth + 15, 0, 0)
+    self.ContentFrame.BackgroundTransparency = 1
+    self.ContentFrame.ClipsDescendants = true
 
     -- 7. Lógica de Arrastar
     self:_makeDraggable(titleBar)
@@ -124,7 +157,6 @@ end
 -- // Funções do Objeto da Janela
 
 function WindowObject:_makeDraggable(frame)
-    -- (Código de arrastar permanece o mesmo da versão anterior)
     local dragInput, framePosition
     frame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -140,119 +172,114 @@ function WindowObject:_makeDraggable(frame)
     end)
 end
 
+function WindowObject:_updateEmptyMessage(tab)
+    local hasElements = #tab.Content:GetChildren() > 1 -- Maior que 1 por causa do UIListLayout
+    tab.EmptyMessage.Visible = not hasElements
+end
+
 function WindowObject:SwitchTab(title)
     if not self.Tabs[title] or self.ActiveTab == title then return end
 
     if self.ActiveTab and self.Tabs[self.ActiveTab] then
         local oldTab = self.Tabs[self.ActiveTab]
         oldTab.Content.Visible = false
-        TweenService:Create(oldTab.Button, TweenInfo.new(0.2), { BackgroundColor3 = DEFAULTS.Colors.ElementBG }):Play()
+        TweenService:Create(oldTab.Button, TweenInfo.new(0.2), { BackgroundColor3 = DEFAULTS.Colors.TabInactive }):Play()
     end
 
     local newTab = self.Tabs[title]
     newTab.Content.Visible = true
-    newTab.Button.BackgroundColor3 = DEFAULTS.Colors.ElementHover
+    newTab.Button.BackgroundColor3 = DEFAULTS.Colors.TabActive
     self.ActiveTab = title
 end
 
-function WindowObject:AddTab(title)
+function WindowObject:AddTab(title, icon)
     local tabData = {}
 
     local tabButton = Instance.new("TextButton", self.TabsContainer)
     tabButton.Name = title
-    tabButton.Size = UDim2.new(1, 0, 0, 40)
-    tabButton.BackgroundColor3 = DEFAULTS.Colors.ElementBG
-    tabButton.Text = title
-    tabButton.Font = DEFAULTS.Fonts.Body
-    tabButton.TextSize = 14
-    tabButton.TextColor3 = DEFAULTS.Colors.TextPrimary
+    tabButton.Size = UDim2.new(1, 0, 0, 42)
+    tabButton.BackgroundColor3 = DEFAULTS.Colors.TabInactive
+    tabButton.Text = ""
     Instance.new("UICorner", tabButton).CornerRadius = UDim.new(0, 6)
+
+    local tabIcon = Instance.new("ImageLabel", tabButton)
+    tabIcon.Image = DEFAULTS.Icons[icon] or DEFAULTS.Icons["tab"]
+    tabIcon.Size = UDim2.new(0, 20, 0, 20)
+    tabIcon.Position = UDim2.new(0, 15, 0.5, -10)
+    tabIcon.BackgroundTransparency = 1
+    tabIcon.ImageColor3 = DEFAULTS.Colors.TextSecondary
+
+    local tabLabel = Instance.new("TextLabel", tabButton)
+    tabLabel.Text = title
+    tabLabel.Font = DEFAULTS.Fonts.Tab
+    tabLabel.TextColor3 = DEFAULTS.Colors.TextPrimary
+    tabLabel.TextSize = 15
+    tabLabel.TextXAlignment = Enum.TextXAlignment.Left
+    tabLabel.Position = UDim2.new(0, 45, 0, 0)
+    tabLabel.Size = UDim2.new(1, -55, 1, 0)
+    tabLabel.BackgroundTransparency = 1
 
     local content = Instance.new("ScrollingFrame", self.ContentFrame)
     content.Name = title .. "Content"
     content.Size = UDim2.fromScale(1, 1)
-    content.BackgroundTransparency = 1
+    content.BackgroundColor3 = DEFAULTS.Colors.Background
     content.BorderSizePixel = 0
-    content.ScrollBarThickness = 4
+    content.ScrollBarThickness = 0
     content.Visible = false
+    Instance.new("UICorner", content).CornerRadius = UDim.new(0, 6)
     local contentLayout = Instance.new("UIListLayout", content)
     contentLayout.Padding = UDim.new(0, 10)
     contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    Instance.new("UIPadding", content).PaddingTop = UDim.new(0, 10)
-    Instance.new("UIPadding", content).PaddingLeft = UDim.new(0, 10)
-    Instance.new("UIPadding", content).PaddingRight = UDim.new(0, 10)
+    Instance.new("UIPadding", content).Padding = UDim.new(0, 15)
+
+    local emptyMessage = Instance.new("Frame", content)
+    emptyMessage.Name = "EmptyMessage"
+    emptyMessage.Size = UDim2.fromScale(1, 1)
+    emptyMessage.BackgroundTransparency = 1
+    local emptyIcon = Instance.new("ImageLabel", emptyMessage)
+    emptyIcon.Image = DEFAULTS.Icons["empty-face"]
+    emptyIcon.Size = UDim2.fromOffset(48, 48)
+    emptyIcon.Position = UDim2.new(0.5, -24, 0.5, -40)
+    emptyIcon.BackgroundTransparency = 1
+    emptyIcon.ImageColor3 = Color3.fromRGB(60, 60, 60)
+    local emptyText = Instance.new("TextLabel", emptyMessage)
+    emptyText.Text = "This tab is empty"
+    emptyText.Font = DEFAULTS.Fonts.Body
+    emptyText.TextColor3 = DEFAULTS.Colors.TextPlaceholder
+    emptyText.TextSize = 14
+    emptyText.Position = UDim2.new(0.5, -100, 0.5, 15)
+    emptyText.Size = UDim2.fromOffset(200, 20)
+    emptyText.BackgroundTransparency = 1
 
     tabData.Button = tabButton
     tabData.Content = content
+    tabData.EmptyMessage = emptyMessage
     self.Tabs[title] = tabData
 
     tabButton.MouseButton1Click:Connect(function() self:SwitchTab(title) end)
 
     if not self.ActiveTab then self:SwitchTab(title) end
+    self:_updateEmptyMessage(tabData)
 
     return tabData
 end
 
--- // Funções para adicionar elementos (Layout Corrigido)
-
+-- // Funções para adicionar elementos
 function WindowObject:AddButton(tab, text, callback)
     if not tab or not tab.Content then return end
-
-    local container = Instance.new("Frame", tab.Content)
-    container.Size = UDim2.new(1, 0, 0, 35)
-    container.BackgroundTransparency = 1
-
-    local button = Instance.new("TextButton", container)
+    
+    local button = Instance.new("TextButton", tab.Content)
     button.Name = text
-    button.Size = UDim2.new(0.5, 0, 1, 0)
-    button.Position = UDim2.new(0.5, 0, 0, 0)
-    button.BackgroundColor3 = DEFAULTS.Colors.ElementBG
+    button.Size = UDim2.new(1, 0, 0, 38)
+    button.BackgroundColor3 = DEFAULTS.Colors.TabInactive
     button.Text = text
     button.TextColor3 = DEFAULTS.Colors.TextPrimary
     button.Font = DEFAULTS.Fonts.Body
+    button.TextSize = 14
     Instance.new("UICorner", button).CornerRadius = UDim.new(0, 6)
 
     button.MouseButton1Click:Connect(function() pcall(callback) end)
+    self:_updateEmptyMessage(tab)
 end
 
-function WindowObject:AddToggle(tab, text, callback)
-    if not tab or not tab.Content then return end
-    local state = false
-
-    local container = Instance.new("Frame", tab.Content)
-    container.Size = UDim2.new(1, 0, 0, 40)
-    container.BackgroundTransparency = 1
-
-    local label = Instance.new("TextLabel", container)
-    label.Text = text
-    label.Font = DEFAULTS.Fonts.Body
-    label.TextColor3 = DEFAULTS.Colors.TextPrimary
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Position = UDim2.new(0, 0, 0.5, -10)
-    label.Size = UDim2.new(0.7, 0, 0, 20)
-    label.BackgroundTransparency = 1
-
-    local switch = Instance.new("TextButton", container)
-    switch.Size = UDim2.new(0, 50, 0, 24)
-    switch.Position = UDim2.new(1, -50, 0.5, -12)
-    switch.BackgroundColor3 = DEFAULTS.Colors.ElementBG
-    switch.Text = ""
-    Instance.new("UICorner", switch).CornerRadius = UDim.new(1, 0)
-
-    local knob = Instance.new("Frame", switch)
-    knob.Size = UDim2.new(0, 18, 0, 18)
-    knob.Position = UDim2.new(0, 4, 0.5, -9)
-    knob.BackgroundColor3 = DEFAULTS.Colors.TextSecondary
-    Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
-
-    switch.MouseButton1Click:Connect(function()
-        state = not state
-        local newPos = state and UDim2.new(1, -22, 0.5, -9) or UDim2.new(0, 4, 0.5, -9)
-        local newColor = state and Color3.fromRGB(100, 180, 100) or DEFAULTS.Colors.ElementBG
-        TweenService:Create(knob, TweenInfo.new(0.2), {Position = newPos}):Play()
-        TweenService:Create(switch, TweenInfo.new(0.2), {BackgroundColor3 = newColor}):Play()
-        pcall(callback, state)
-    end)
-end
-
-return Zyrex
+return Nexus
